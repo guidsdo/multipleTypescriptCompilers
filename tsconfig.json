@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "types": ["node"],
+        "lib": ["es6"],
+        "declaration": false,
+        "experimentalDecorators": true,
+        "outDir": "lib",
+        "moduleResolution": "node",
+        "noEmitOnError": true,
+        "noImplicitAny": true
+    },
+    "include": ["src"],
+    "exclude": ["node_modules"]
+}
