@@ -10,6 +10,7 @@ Run multiple typescript compilers concurrent at the same time. Usage: `mtsc <tsc
 
 ## Options
 `-d` for debug mode
+
 `--help` for help
 
 ## Vscode tasks json example
@@ -20,10 +21,13 @@ Run multiple typescript compilers concurrent at the same time. Usage: `mtsc <tsc
     {
       "taskName": "Watch all",
       "command": "./node_modules/.bin/mtsc",
+       "windows": {
+        "command": ".\\node_modules\\.bin\\mtsc"
+      },
       "isBuildCommand": true,
       "isShellCommand": true,
       "args": [
-        "node_modules/.bin/tsc",
+        "${workspaceRoot}/node_modules/.bin/tsc",
         "${workspaceRoot}/itest",
         "${workspaceRoot}/scripts/ts-scripts",
         "${workspaceRoot}/webModeler/server",
