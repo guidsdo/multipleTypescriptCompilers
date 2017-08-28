@@ -1,6 +1,6 @@
 {
     "name": "mtsc",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Run multiple typescript compilers at the same time. Usage: `mtsc [directories...]` Example: `mtsc client server scripts`",
     "main": "lib/index.js",
     "scripts": {

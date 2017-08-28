@@ -33,12 +33,12 @@ class ProjectCompiler {
         const child = sh.exec(this.compileCommand, execOptions) as ChildProcess;
 
         child.stdout.on("data", (data: string) => {
-            this.resultBuffer.push(data);
-
             if (data.match(/Compilation complete\. Watching for file changes/)) {
                 debugLog("Compilation was complete, now printing everything");
                 this.lastResult = this.resultBuffer.join("\n");
                 this.compiledCb();
+            } else {
+                this.resultBuffer.push(data);
             }
         });
     }
@@ -76,8 +76,9 @@ function onInputReceive(tscPath: string, tsConfigs: string[]) {
             .map(projectCompiler => {
                 return projectCompiler.getLastResult();
             })
-            .join();
+            .join("");
         console.log(result);
+        console.log("Compilation complete. Watching for file changes.");
     };
 
     tsConfigs.forEach(tsConfig => {
