@@ -1,26 +1,54 @@
 {
-    "editor.tabSize": 4,
-    "editor.insertSpaces": true,
-    "editor.formatOnSave": true,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "files.trimTrailingWhitespace": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "git.autofetch": false,
+  "search.exclude": {
+    "node_modules": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.formatOnSave": true
+  },
+  "[scss]": {
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
 
-    "files.trimTrailingWhitespace": true,
-    "files.eol": "\n",
-    "files.insertFinalNewline": true,
-    "files.associations": {
-      "**/.ebextensions/*.config": "yaml"
-    },
+  // Typescript
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
 
-    "git.autofetch": false,
-    "search.exclude": {
-      "node_modules": true
-    },
-    // Typescript
-    "typescript.tsdk": "./node_modules/typescript/lib",
-    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
+  // Plugins
+  "prettier.tabWidth": 4,
+  "prettier.printWidth": 120,
 
-    // Plugins
-    "prettier.tabWidth": 4,
-    "prettier.printWidth": 120,
-    "typescriptHero.resolver.stringQuoteStyle": "\"",
-    "csscomb.formatOnSave": true
-  }
+  "tslint.enable": true,
+  "tslint.rulesDirectory": [
+    "./node_modules/tslint-eslint-rules/dist/rules",
+    "./node_modules/tslint-react/rules"
+  ],
+
+  "typescriptHero.resolver.stringQuoteStyle": "\"",
+
+  "typescript.extension.sortImports.quoteStyle": "double",
+  "typescript.extension.sortImports.sortOnSave": true,
+  "typescript.extension.sortImports.sortMethod": "path",
+  "typescript.extension.sortImports.maxNamedImportsInSingleLine": 6,
+  "typescript.extension.sortImports.pathSortOrder": [
+    "package",
+    "relativeUpLevel",
+    "relativeDownLevel"
+  ],
+
+  "csscomb.formatOnSave": true
+}
