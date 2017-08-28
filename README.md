@@ -1,4 +1,4 @@
-# multiTypescriptCompilers
+# Multiple Typescript Compilers
 Run multiple typescript compilers concurrent at the same time. Usage: `mtsc <tsc compiler> [directories...]` Example: `mtsc node_modules/.bin/tsc client server middleware`
 
 ## Usage
