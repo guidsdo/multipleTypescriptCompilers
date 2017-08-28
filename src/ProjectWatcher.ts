@@ -47,7 +47,7 @@ export function startCompilations() {
 
 function logStatus(type: logType) {
     if (type === "COMPILING") {
-        console.log(`${getTimestamp()} - File change detected. Starting incremental compilation.`);
+        console.log(`${getTimestamp()} - File change detected. Starting incremental compilation...`);
     } else if (type === "COMPLETE") {
         console.log(`${getTimestamp()} - Compilation complete. Watching for file changes.`);
     }
