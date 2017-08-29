@@ -1,5 +1,5 @@
 # Multiple Typescript Compilers
-Run multiple typescript compilers concurrent at the same time. Usage: `mtsc <tsc compiler> [directories...]` Example: `mtsc node_modules/.bin/tsc client server middleware`
+_Run multiple typescript compilers concurrently at the same time. Usage: `mtsc <tsc compiler> [directories...]` Example: `mtsc node_modules/.bin/tsc client server middleware`_
 
 ## Usage
 ### Cli:
@@ -7,6 +7,12 @@ Run multiple typescript compilers concurrent at the same time. Usage: `mtsc <tsc
 
 ### Example:
 `./node_modules/.bin/mtsc node_modules/.bin/tsc client scripts/ide.tsconfig.json special/location`
+
+## Why?
+I began this project because vscode couldn't handle the output of multiple typescript project. If you have multiple projects watched at the same time, only the output of the last compilation will be considered and the other errors of other projects are hidden. This has to do, with the problem matcher vscode uses, explained here: https://code.visualstudio.com/docs/editor/tasks-v1#_background-watching-tasks
+
+### How it was fixed:
+This always prints the compilation output of the other projects when a new compilation is done. It also makes sure that the interpreter knows there is still a compilation going on by printing a compilation start message when there is still one running.
 
 ## Options
 `-d` for debug mode
@@ -40,3 +46,13 @@ Run multiple typescript compilers concurrent at the same time. Usage: `mtsc <tsc
   ]
 }
 ```
+
+---
+
+
+
+<center>
+<img src="https://www.mendix.com/styleguide/img/logo-mendix.png" align="center" width="200"/>
+
+__Mtsc is proudly used for development at [Mendix](https://www.mendix.com)__
+</center>
