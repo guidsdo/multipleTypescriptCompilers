@@ -4,7 +4,7 @@ import * as commander from "commander";
 import * as moment from "moment";
 import * as sh from "shelljs";
 import { debugLog, setDebugMode } from "./debugTools";
-import { addProject, projectCompilationComplete, projectCompilationStart, startCompilations } from "./ProjectWatcher";
+import { ProjectWatcher } from "./ProjectWatcher";
 
 /**
  * This is a CLI tool that allows multiple typescript compilers to run at the same time.
@@ -32,6 +32,8 @@ function onInputReceive(tscPath: string, projects: string[]) {
     const tscCommand = `${tscPath} -w -p`;
     debugLog("Setting tsc command to", tscCommand);
 
-    projects.forEach(project => addProject(project, tscCommand));
-    startCompilations();
+    const projectWatcher = new ProjectWatcher();
+
+    projects.forEach(project => projectWatcher.addProject(project, tscCommand));
+    projectWatcher.startCompilations();
 }

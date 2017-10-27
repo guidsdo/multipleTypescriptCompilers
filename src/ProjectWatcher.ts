@@ -2,54 +2,62 @@ import * as moment from "moment";
 import { debugLog } from "./debugTools";
 import { Project } from "./Project";
 
-const projects: Project[] = [];
 type logType = "COMPILING" | "COMPLETE";
-let lastLog: logType = "COMPILING";
 
-function getTimestamp() {
-    return moment().format("HH:mm:ss");
-}
+export class ProjectWatcher {
+    private lastLog: logType = "COMPILING";
+    private projects: Project[] = [];
 
-function isAProjectCompiling() {
-    return projects.find(project => project.isCompiling());
-}
-
-export function projectCompilationStart() {
-    if (lastLog === "COMPLETE") {
-        logStatus("COMPILING");
+    addProject(project: string, tscCommand: string) {
+        debugLog("Creating project compiler for:", project);
+        const newProjectCompiler = new Project(
+            project,
+            tscCommand,
+            this.projectCompilationStart,
+            this.projectCompilationComplete
+        );
+        this.projects.push(newProjectCompiler);
     }
-}
 
-export function projectCompilationComplete() {
-    const result = projects
-        .map(projectCompiler => {
-            return projectCompiler.getLastResult();
-        })
-        .join("");
-
-    console.log(result);
-    logStatus("COMPLETE");
-
-    if (isAProjectCompiling()) {
-        logStatus("COMPILING");
+    startCompilations() {
+        this.projects.forEach(project => project.createAndWatchCompilation());
     }
-}
 
-export function addProject(project: string, tscCommand: string) {
-    debugLog("Creating project compiler for:", project);
-    const newProjectCompiler = new Project(project, tscCommand, projectCompilationStart, projectCompilationComplete);
-    projects.push(newProjectCompiler);
-}
-
-export function startCompilations() {
-    projects.forEach(project => project.createAndWatchCompilation());
-}
-
-function logStatus(type: logType) {
-    if (type === "COMPILING") {
-        console.log(`${getTimestamp()} - File change detected. Starting incremental compilation...`);
-    } else if (type === "COMPLETE") {
-        console.log(`${getTimestamp()} - Compilation complete. Watching for file changes.`);
+    private getTimestamp() {
+        return moment().format("HH:mm:ss");
     }
-    lastLog = type;
+
+    private isAProjectCompiling() {
+        return this.projects.find(project => project.isCompiling());
+    }
+
+    private projectCompilationStart() {
+        if (this.lastLog === "COMPLETE") {
+            this.logStatus("COMPILING");
+        }
+    }
+
+    private projectCompilationComplete() {
+        const result = this.projects
+            .map(projectCompiler => {
+                return projectCompiler.getLastResult();
+            })
+            .join("");
+
+        console.log(result);
+        this.logStatus("COMPLETE");
+
+        if (this.isAProjectCompiling()) {
+            this.logStatus("COMPILING");
+        }
+    }
+
+    private logStatus(type: logType) {
+        if (type === "COMPILING") {
+            console.log(`${this.getTimestamp()} - File change detected. Starting incremental compilation...`);
+        } else if (type === "COMPLETE") {
+            console.log(`${this.getTimestamp()} - Compilation complete. Watching for file changes.`);
+        }
+        this.lastLog = type;
+    }
 }
