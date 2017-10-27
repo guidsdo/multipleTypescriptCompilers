@@ -39,7 +39,7 @@ const projectWatcher = new ProjectsWatcher();
 
 const addedProjects: string[] = [];
 commander.args.forEach(project => {
-    if (addedProjects.indexOf(project) < 0) {
+    if (addedProjects.indexOf(project) >= 0) {
         debugLog("Ignored duplicate project", project);
         return;
     }
