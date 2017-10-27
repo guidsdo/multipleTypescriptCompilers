@@ -1,6 +1,6 @@
 {
     "name": "mtsc",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Run multiple typescript compilers concurrent at the same time! Usage: `mtsc <tsc compiler> [directories...]`",
     "main": "lib/index.js",
     "scripts": {
