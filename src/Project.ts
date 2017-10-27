@@ -2,29 +2,40 @@ import { ChildProcess } from "child_process";
 import * as sh from "shelljs";
 import { DEBUG_MODE, debugLog } from "./debugTools";
 
+export type ProjectConfig = {
+    watch: boolean;
+    projectPath: string;
+    compilerPath: string;
+};
+
 export class Project {
+    private config: ProjectConfig;
     private resultBuffer: string[] = [];
     private lastResult = "";
-    private configPath: string;
-    private compileCommand: string;
     private compilingCb: () => void;
     private compiledCb: () => void;
+    private doneCb: (p: Project) => void;
+    private hasEnded: boolean;
 
-    constructor(configPath: string, compileCommand: string, compilingCb: () => void, compiledCb: () => void) {
-        this.configPath = configPath;
-        this.compileCommand = `${compileCommand} ${this.configPath}`;
+    constructor(config: ProjectConfig, compilingCb: () => void, compiledCb: () => void, doneCb: (p: Project) => void) {
+        this.config = config;
         this.compilingCb = compilingCb;
         this.compiledCb = compiledCb;
+        this.doneCb = doneCb;
     }
 
-    createAndWatchCompilation() {
-        debugLog("Executing following command", this.compileCommand);
+    startCompiling() {
+        const { compilerPath, watch, projectPath } = this.config;
+        const compileCommand = `${compilerPath} ${watch ? "-w" : ""} -p ${projectPath}`;
+
+        debugLog("Executing following command", compileCommand);
 
         const execOptions = { async: true, silent: !DEBUG_MODE };
 
-        const child = sh.exec(this.compileCommand, execOptions) as ChildProcess;
+        const child = sh.exec(compileCommand, execOptions) as ChildProcess;
 
         child.stdout.on("data", this.parseCommandOutput);
+        child.stdout.on("end", () => this.doneCb(this));
     }
 
     parseCommandOutput = (data: string) => {

@@ -1,43 +1,35 @@
 import * as moment from "moment";
 import { debugLog } from "./debugTools";
-import { Project } from "./Project";
+import { Project, ProjectConfig } from "./Project";
 
-type logType = "COMPILING" | "COMPLETE";
+type logType = "COMPILING" | "COMPLETE" | "FINAL";
 
-export class ProjectWatcher {
+export class ProjectsWatcher {
     private lastLog: logType = "COMPILING";
     private projects: Project[] = [];
 
-    addProject(project: string, tscCommand: string) {
-        debugLog("Creating project compiler for:", project);
+    addProject(projectConfig: ProjectConfig) {
+        debugLog("Creating project compiler for:", projectConfig.projectPath);
         const newProjectCompiler = new Project(
-            project,
-            tscCommand,
+            projectConfig,
             this.projectCompilationStart,
-            this.projectCompilationComplete
+            this.projectCompilationComplete,
+            this.projectCompilationFinal
         );
         this.projects.push(newProjectCompiler);
     }
 
     startCompilations() {
-        this.projects.forEach(project => project.createAndWatchCompilation());
+        this.projects.forEach(project => project.startCompiling());
     }
 
-    private getTimestamp() {
-        return moment().format("HH:mm:ss");
-    }
-
-    private isAProjectCompiling() {
-        return this.projects.find(project => project.isCompiling());
-    }
-
-    private projectCompilationStart() {
+    projectCompilationStart = () => {
         if (this.lastLog === "COMPLETE") {
             this.logStatus("COMPILING");
         }
-    }
+    };
 
-    private projectCompilationComplete() {
+    projectCompilationComplete = () => {
         const result = this.projects
             .map(projectCompiler => {
                 return projectCompiler.getLastResult();
@@ -50,6 +42,23 @@ export class ProjectWatcher {
         if (this.isAProjectCompiling()) {
             this.logStatus("COMPILING");
         }
+    };
+
+    projectCompilationFinal = (project: Project) => {
+        this.projectCompilationComplete();
+        this.projects.splice(this.projects.indexOf(project), 1);
+
+        if (!this.projects.length) {
+            this.logStatus("FINAL");
+        }
+    };
+
+    private getTimestamp() {
+        return moment().format("HH:mm:ss");
+    }
+
+    private isAProjectCompiling() {
+        return this.projects.find(project => project.isCompiling());
     }
 
     private logStatus(type: logType) {
@@ -57,6 +66,8 @@ export class ProjectWatcher {
             console.log(`${this.getTimestamp()} - File change detected. Starting incremental compilation...`);
         } else if (type === "COMPLETE") {
             console.log(`${this.getTimestamp()} - Compilation complete. Watching for file changes.`);
+        } else {
+            console.log(`${this.getTimestamp()} - Done compiling all projects.`);
         }
         this.lastLog = type;
     }

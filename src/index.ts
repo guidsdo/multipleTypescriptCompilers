@@ -4,7 +4,8 @@ import * as commander from "commander";
 import * as moment from "moment";
 import * as sh from "shelljs";
 import { debugLog, setDebugMode } from "./debugTools";
-import { ProjectWatcher } from "./ProjectWatcher";
+import { findNodeModule } from "./packageFinder";
+import { ProjectsWatcher } from "./ProjectsWatcher";
 
 /**
  * This is a CLI tool that allows multiple typescript compilers to run at the same time.
@@ -12,28 +13,35 @@ import { ProjectWatcher } from "./ProjectWatcher";
  * don't lose the error's in tools like visual studio code.
  */
 
-commander.option("-d --debug").arguments("<tsc location> [tsconfigs...]").action(onInputReceive).parse(process.argv);
+commander
+    .usage("[options] [projects/tsconfigs...]")
+    .option("-d, --debug")
+    .option("-w, --watch", "Watch the given projects (default false)")
+    .option("-c, --compiler [path_to_tsc]", "Path to compiler for all projects (will search in exec dir if not given)")
+    .parse(process.argv);
 
-function onInputReceive(tscPath: string, projects: string[]) {
-    setDebugMode(commander.debug);
+setDebugMode(commander.debug);
 
-    debugLog('Checking if tsc path ends with "tsc"', tscPath);
-    if (!tscPath.endsWith("tsc")) {
-        console.error(colors.red("No typescript compiler given, do normal please.."));
-        process.exit(1);
-    }
-
-    debugLog("Checking if there are typescript folders", projects);
-    if (!projects.length) {
-        console.error(colors.red("No tsconfigs given, do normal please.."));
-        process.exit(1);
-    }
-
-    const tscCommand = `${tscPath} -w -p`;
-    debugLog("Setting tsc command to", tscCommand);
-
-    const projectWatcher = new ProjectWatcher();
-
-    projects.forEach(project => projectWatcher.addProject(project, tscCommand));
-    projectWatcher.startCompilations();
+debugLog("Checking if global compiler is given", commander.compiler);
+if (commander.compiler && typeof commander.compiler === "boolean") {
+    debugLog("Compiler command is boolean (true), so now searching for tsc executable");
+    commander.compiler = findNodeModule(".", "tsc");
+    debugLog("Compiler command set to", commander.compiler);
 }
+
+debugLog("Checking if there are project folders or tsconfigs given", commander.args);
+if (!commander.args.length) {
+    debugLog("No tsconfig arguments given, will use current dir");
+    commander.args.push(".");
+}
+
+const projectWatcher = new ProjectsWatcher();
+commander.args.forEach(project => {
+    projectWatcher.addProject({
+        watch: !!commander.watch,
+        projectPath: project,
+        compilerPath: commander.compiler || findNodeModule(project, "tsc")
+    });
+});
+
+projectWatcher.startCompilations();
