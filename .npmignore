@@ -1,0 +1,15 @@
+.vscode
+// bin
+// lib
+node_modules
+src
+test_setup
+.gitignore
+// .npmignore
+// LICENSE
+mtsc.json
+package-lock.json
+// package.json
+// README.md
+tsconfig.json
+tslint.json

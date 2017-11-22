@@ -1,5 +1,5 @@
 # Multiple Typescript Compilers
-_Run multiple typescript compilers concurrently at the same time. Usage: `mtsc [directories/tsconfigs...]` Example: `mtsc node_modules/.bin/tsc client server middleware/new_tsconfig.json`_
+_Run multiple typescript compilers concurrently at the same time. Usage: `mtsc [directories/tsconfigs...]` Example: `mtsc client server middleware/new_tsconfig.json`_
 
 ## Usage
 ### Cli:
