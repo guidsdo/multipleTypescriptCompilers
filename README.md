@@ -31,27 +31,28 @@ This always prints the compilation output of the other projects when a new compi
 ## Vscode tasks json example
 ```json
 {
-  "version": "0.1.0",
+  "version": "2.0.0",
   "tasks": [
-    {
-      "taskName": "Watch all",
-      "command": "./node_modules/.bin/mtsc",
-       "windows": {
-        "command": ".\\node_modules\\.bin\\mtsc"
-      },
-      "isBuildCommand": true,
-      "isShellCommand": true,
-      "args": [
-        "${workspaceRoot}/node_modules/.bin/tsc",
-        "${workspaceRoot}/itest",
-        "${workspaceRoot}/scripts/ts-scripts",
-        "${workspaceRoot}/webModeler/server",
-        "${workspaceRoot}/webModeler/client"
-      ],
-      "showOutput": "silent",
-      "isBackground": true,
-      "problemMatcher": "$tsc-watch"
-    }
+      {
+          "label": "typescript",
+          "type": "shell",
+          "command": "./node_modules/.bin/mtsc",
+          "windows": {
+            "command": ".\\node_modules\\.bin\\mtsc"
+          },
+          "args": [
+            "-w",
+            "${workspaceRoot}/projectA",
+            "${workspaceRoot}/scripts/projectB",
+            "${workspaceRoot}/projectC/tsconfig.json"
+          ],
+          "isBackground": true,
+          "problemMatcher": "$tsc-watch",
+          "group": {
+            "kind": "build",
+            "isDefault": true
+        }
+      }
   ]
 }
 ```
@@ -63,8 +64,6 @@ This always prints the compilation output of the other projects when a new compi
 * Specify specific options per project
 
 ---
-
-
 
 <center>
 <img src="https://www.mendix.com/styleguide/img/logo-mendix.png" align="center" width="200"/>
