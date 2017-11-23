@@ -59,14 +59,14 @@ This always prints the compilation output of the other projects when a new compi
 
 ## Roadmap
 * Add json config option
-* Use vscode tasks 2.0 in example
+* ~~Use vscode tasks 2.0 in example~~
 * Add tslint option for each project(!)
 * Specify specific options per project
 
 ---
 
 <center>
-<img src="https://www.mendix.com/styleguide/img/logo-mendix.png" align="center" width="200"/>
+<img src="https://www.mendix.com/ui/images/mendix-logo.png" align="center" width="200"/>
 
 __Mtsc is proudly used for development at [Mendix](https://www.mendix.com)__
 </center>
