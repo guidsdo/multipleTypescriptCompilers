@@ -1,32 +1,32 @@
 import { ChildProcess } from "child_process";
 import * as sh from "shelljs";
-import { DEBUG_MODE, debugLog } from "./debugTools";
+import { DEBUG_MODE } from "../helpers/debugTools";
+import { debugLog } from "../helpers/debugTools";
 
-export type ProjectConfig = {
+export type ProjectArgs = {
     watch: boolean;
-    projectPath: string;
-    compilerPath: string;
+    path: string;
+    compiler: string;
 };
 
 export class Project {
-    private config: ProjectConfig;
-    private resultBuffer: string[] = [];
+    private args: ProjectArgs;
+    private resultBuffer: string[] | null = [];
     private lastResult = "";
     private compilingCb: () => void;
     private compiledCb: () => void;
     private doneCb: (p: Project) => void;
-    private hasEnded: boolean;
 
-    constructor(config: ProjectConfig, compilingCb: () => void, compiledCb: () => void, doneCb: (p: Project) => void) {
-        this.config = config;
+    constructor(args: ProjectArgs, compilingCb: () => void, compiledCb: () => void, doneCb: (p: Project) => void) {
+        this.args = args;
         this.compilingCb = compilingCb;
         this.compiledCb = compiledCb;
         this.doneCb = doneCb;
     }
 
     startCompiling() {
-        const { compilerPath, watch, projectPath } = this.config;
-        const compileCommand = `${compilerPath} ${watch ? "-w" : ""} -p ${projectPath}`;
+        const { compiler, watch, path } = this.args;
+        const compileCommand = `${compiler} ${watch ? "-w" : ""} -p ${path}`;
 
         debugLog("Executing following command", compileCommand);
 
@@ -61,5 +61,9 @@ export class Project {
 
     isCompiling() {
         return !!this.resultBuffer;
+    }
+
+    equals(otherProjectPath: string) {
+        return this.args.path.toLocaleLowerCase() === otherProjectPath.toLocaleLowerCase();
     }
 }

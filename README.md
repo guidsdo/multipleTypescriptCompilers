@@ -22,10 +22,11 @@ This always prints the compilation output of the other projects when a new compi
 
 ## Options
 ```
--d, --debug
--w, --watch                   Watch the given projects (default false)
--c, --compiler [path_to_tsc]  Path to compiler for all projects (will search in exec dir if not given)
--h, --help                    output usage information
+  -d, --debug
+  -c, --config [path_to_config]  Path to mtsc config
+  -w, --watch                    Watch the given projects (default false)
+  -t, --tsc [path_to_tsc]        Path to compiler for all projects (will search in exec dir if not given)
+  -h, --help                     output usage information
 ```
 
 ## Vscode tasks json example

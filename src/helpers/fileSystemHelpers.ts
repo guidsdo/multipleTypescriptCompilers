@@ -2,7 +2,7 @@ import * as node_fs from "fs";
 import * as node_path from "path";
 import { debugLog } from "./debugTools";
 
-export function findNodeModule(path: string, moduleName: string) {
+export function findNodeModuleExecutable(path: string, moduleName: string) {
     const nodeModulePath = getNodeModulesPath(path);
     const executable = node_path.resolve(nodeModulePath, ".bin", moduleName);
     canExecutePath(executable);
@@ -27,7 +27,7 @@ function getProjectDir(path: string) {
     return projectDir;
 }
 
-function canAccessPath(path: string) {
+export function canAccessPath(path: string) {
     debugLog(`Checking if ${path} exists and can be accessed`);
     node_fs.accessSync(path, node_fs.constants.F_OK & node_fs.constants.R_OK);
 }

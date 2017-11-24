@@ -10,6 +10,10 @@ export function debugLog(message: string, argument?: any) {
 }
 
 export function setDebugMode(debug: boolean) {
-    this.DEBUG_MODE = debug;
-    debugLog("Debug mode is active");
+    if (DEBUG_MODE === !!debug) {
+        return;
+    }
+
+    debugLog("Debug mode is", !!debug);
+    DEBUG_MODE = debug;
 }

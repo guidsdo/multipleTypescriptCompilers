@@ -2,14 +2,20 @@
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
-        "types": ["node"],
+        "types": ["node", "jest"],
         "lib": ["es6"],
         "declaration": false,
         "experimentalDecorators": true,
         "outDir": "lib",
         "moduleResolution": "node",
         "noEmitOnError": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true
     },
     "include": ["src"],
     "exclude": ["node_modules"]

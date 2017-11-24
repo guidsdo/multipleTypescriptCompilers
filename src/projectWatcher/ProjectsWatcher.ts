@@ -1,6 +1,6 @@
 import * as moment from "moment";
-import { debugLog } from "./debugTools";
-import { Project, ProjectConfig } from "./Project";
+import { debugLog } from "../helpers/debugTools";
+import { Project, ProjectArgs } from "./Project";
 
 type logType = "COMPILING" | "COMPLETE" | "FINAL";
 
@@ -8,10 +8,15 @@ export class ProjectsWatcher {
     private lastLog: logType = "COMPILING";
     private projects: Project[] = [];
 
-    addProject(projectConfig: ProjectConfig) {
-        debugLog("Creating project compiler for:", projectConfig.projectPath);
+    addProject(projectArgs: ProjectArgs) {
+        if (this.findProject(projectArgs.path)) {
+            debugLog("Ignored duplicate project", projectArgs.path);
+            return;
+        }
+
+        debugLog("Creating project compiler for", projectArgs.path);
         const newProjectCompiler = new Project(
-            projectConfig,
+            projectArgs,
             this.projectCompilationStart,
             this.projectCompilationComplete,
             this.projectCompilationFinal
@@ -52,6 +57,10 @@ export class ProjectsWatcher {
             this.logStatus("FINAL");
         }
     };
+
+    private findProject(path: string): Project | null {
+        return this.projects.find(project => project.equals(path)) || null;
+    }
 
     private getTimestamp() {
         return moment().format("HH:mm:ss");
