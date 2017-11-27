@@ -14,6 +14,8 @@ commander
     .option("-t, --tsc [path_to_tsc]", "Path to compiler for all projects (will search in exec dir if not given)")
     .parse(process.argv);
 
+setDebugMode(!!commander.debug);
+
 const mtscConfig: MtscConfig = findMtscConfig(commander.config) || { projects: [] };
 
 mtscConfig.debug = commander.debug || mtscConfig.debug;
@@ -43,7 +45,7 @@ if (commander.watch) {
 }
 
 debugLog("Checking if there are project folders or tsconfigs given", commander.args);
-if (!commander.args.length) {
+if (!commander.args.length && !mtscConfig.projects.length) {
     debugLog("No tsconfig arguments given, will use current dir");
     commander.args.push(".");
 }

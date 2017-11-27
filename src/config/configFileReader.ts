@@ -7,7 +7,7 @@ import { MtscConfig, ProjectConfig } from "./configSpec";
 const DEFAULT_CONFIG_NAME = "mtsc.json";
 
 export function findMtscConfig(path?: string): MtscConfig | null {
-    if (path) {
+    if (isValidString(path)) {
         debugLog("Trying to open mtsc config", path);
         canAccessPath(path);
         return JSON.parse(fs.readFileSync(path, "utf8"));
