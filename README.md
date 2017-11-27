@@ -29,7 +29,26 @@ This always prints the compilation output of the other projects when a new compi
   -h, --help                     output usage information
 ```
 
-## Vscode tasks json example
+## mtsc.json spec
+```typescript
+export type ProjectConfig =
+    | string
+    | {
+          path: string;
+          watch?: boolean;
+          compiler?: string;
+      };
+
+export type MtscConfig = {
+    debug?: boolean;
+    watch?: boolean;
+    compiler?: string;
+    projects: ProjectConfig[];
+};
+```
+
+## Vscode tasks json examples
+### Example using cli only
 ```json
 {
   "version": "2.0.0",
@@ -58,11 +77,47 @@ This always prints the compilation output of the other projects when a new compi
 }
 ```
 
+### Example using CLI + config
+`tasks.json`
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "Typescript watch",
+          "command": "./node_modules/.bin/mtsc",
+          "windows": {
+            "command": ".\\node_modules\\.bin\\mtsc"
+          },
+          "isBackground": true,
+          "problemMatcher": "$tsc-watch",
+          "group": {
+            "kind": "build",
+            "isDefault": true
+          }
+      }
+  ]
+}
+```
+
+`mtsc.json` (will be autodetected)
+```json
+{
+    "debug": false,
+    "watch": true,
+    "projects": [
+        "projectA",
+        "scripts/projectB",
+        "projectC/tsconfig.json"
+    ]
+}
+```
+
 ## Roadmap
-* Add json config option
+* ~~Add json config option~~
 * ~~Use vscode tasks 2.0 in example~~
 * Add tslint option for each project(!)
-* Specify specific options per project
+* ~~Specify specific options per project~~
 
 ---
 
