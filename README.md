@@ -57,9 +57,6 @@ export type MtscConfig = {
           "label": "typescript",
           "type": "shell",
           "command": "./node_modules/.bin/mtsc",
-          "windows": {
-            "command": ".\\node_modules\\.bin\\mtsc"
-          },
           "args": [
             "-w",
             "${workspaceRoot}/projectA",
@@ -86,9 +83,7 @@ export type MtscConfig = {
       {
           "label": "Typescript watch",
           "command": "./node_modules/.bin/mtsc",
-          "windows": {
-            "command": ".\\node_modules\\.bin\\mtsc"
-          },
+          "type": "shell",
           "isBackground": true,
           "problemMatcher": "$tsc-watch",
           "group": {
