@@ -1,5 +1,5 @@
 import * as commander from "commander";
-import { findMtscConfig } from "../config/configFileReader";
+import { findMtscConfig, validateMtscConfig } from "../config/configFileReader";
 import { initProjectsWatcher } from "../config/configInterpreter";
 import { MtscConfig } from "../config/configSpec";
 import { debugLog, setDebugMode } from "../helpers/debugTools";
@@ -16,10 +16,13 @@ commander
 
 setDebugMode(!!commander.debug);
 
-const mtscConfig: MtscConfig = findMtscConfig(commander.config) || { projects: [] };
+const foundConfig = findMtscConfig(commander.config);
+const mtscConfig: MtscConfig = foundConfig || { projects: [] };
 
 mtscConfig.debug = commander.debug || mtscConfig.debug;
 setDebugMode(!!mtscConfig.debug);
+
+if (foundConfig) validateMtscConfig(foundConfig);
 
 debugLog("Checking if config is given or autodetect", commander.config);
 debugLog("Any options given in CLI will overwrite the config");
