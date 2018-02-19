@@ -2,26 +2,33 @@ import { ChildProcess } from "child_process";
 import * as sh from "shelljs";
 import { DEBUG_MODE } from "../helpers/debugTools";
 import { debugLog } from "../helpers/debugTools";
+import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
-export type ProjectArgs = {
+export type ProjectSettings = {
     watch: boolean;
     path: string;
     compiler: string;
+    tslint?: TslintSettings;
 };
 
 export class Project {
-    private args: ProjectArgs;
+    private args: ProjectSettings;
     private resultBuffer: string[] | null = [];
     private lastResult = "";
     private compilingCb: () => void;
     private compiledCb: () => void;
     private doneCb: (p: Project) => void;
+    private tslintRunner: TslintRunner | null = null;
 
-    constructor(args: ProjectArgs, compilingCb: () => void, compiledCb: () => void, doneCb: (p: Project) => void) {
+    constructor(args: ProjectSettings, compilingCb: () => void, compiledCb: () => void, doneCb: (p: Project) => void) {
         this.args = args;
         this.compilingCb = compilingCb;
         this.compiledCb = compiledCb;
         this.doneCb = doneCb;
+
+        if (this.args.tslint !== undefined) {
+            this.tslintRunner = new TslintRunner(this.args.tslint, this.compiledCb);
+        }
     }
 
     startCompiling() {
@@ -38,7 +45,7 @@ export class Project {
         child.stdout.on("end", () => this.doneCb(this));
     }
 
-    parseCommandOutput = (data: string) => {
+    private parseCommandOutput = (data: string) => {
         if (!this.resultBuffer) {
             this.resultBuffer = [];
         }
@@ -48,7 +55,13 @@ export class Project {
             this.lastResult = this.resultBuffer.join("\n");
             this.resultBuffer = null;
             this.compiledCb();
+
+            if (this.tslintRunner) {
+                this.tslintRunner.startLinting();
+                this.compilingCb();
+            }
         } else if (data.match(/File change detected. Starting incremental compilation/)) {
+            if (this.tslintRunner) this.tslintRunner.stopLinting();
             this.compilingCb();
         } else {
             this.resultBuffer.push(data);
@@ -56,7 +69,13 @@ export class Project {
     };
 
     getLastResult() {
-        return this.lastResult;
+        const result = [this.lastResult];
+        if (this.tslintRunner && !this.tslintRunner.isRunning) {
+            const tslintResult = this.tslintRunner.getResult();
+            if (tslintResult) result.push(this.tslintRunner.getResult());
+        }
+
+        return result.join("\n");
     }
 
     isCompiling() {

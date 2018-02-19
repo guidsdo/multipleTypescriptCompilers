@@ -1,6 +1,6 @@
 import * as moment from "moment";
 import { debugLog } from "../helpers/debugTools";
-import { Project, ProjectArgs } from "./Project";
+import { Project, ProjectSettings } from "./Project";
 
 type logType = "COMPILING" | "COMPLETE" | "FINAL";
 
@@ -8,7 +8,7 @@ export class ProjectsWatcher {
     private lastLog: logType = "COMPILING";
     private projects: Project[] = [];
 
-    addProject(projectArgs: ProjectArgs) {
+    addProject(projectArgs: ProjectSettings) {
         if (this.findProject(projectArgs.path)) {
             debugLog("Ignored duplicate project", projectArgs.path);
             return;
