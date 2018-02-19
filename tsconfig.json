@@ -15,7 +15,14 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "strictFunctionTypes": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "plugins": [
+            {
+                "name": "tslint-language-service",
+                "configFile": "./tslint.json",
+                "supressWhileTypeErrorsPresent": false
+            }
+        ]
     },
     "include": ["src"],
     "exclude": ["node_modules"]
