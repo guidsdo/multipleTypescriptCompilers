@@ -36,3 +36,11 @@ function canExecutePath(path: string) {
     debugLog(`Checking if ${path} exists and can be executed`);
     node_fs.accessSync(path, node_fs.constants.F_OK & node_fs.constants.X_OK);
 }
+
+const runnerOriginPath = node_path.resolve(".") + "/";
+
+export function getRelativePath(absolutePath: string) {
+    return absolutePath.startsWith(runnerOriginPath)
+        ? absolutePath.substr(runnerOriginPath.length)
+        : node_path.resolve(absolutePath).substr(runnerOriginPath.length);
+}
