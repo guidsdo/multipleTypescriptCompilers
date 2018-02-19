@@ -2,17 +2,39 @@ import * as node_fs from "fs";
 import * as node_path from "path";
 import { debugLog } from "./debugTools";
 
+export function findJsonFile(path: string, fallbackFileName: string) {
+    canAccessPath(path);
+    const pathInfo = node_fs.lstatSync(path);
+
+    debugLog("Deciding if given path is a directory", path);
+    if (pathInfo.isDirectory()) {
+        const jsonPath = getFileOrDirInPath(path, fallbackFileName);
+        canAccessPath(jsonPath);
+        return jsonPath;
+    }
+
+    debugLog("Deciding if given path is a json file", path);
+    if (path.endsWith(".json")) {
+        canAccessPath(path);
+        return path;
+    }
+
+    throw new Error(
+        `No valid json file found for "${path}" or file called "${fallbackFileName}" in it. Use --debug for more info.`
+    );
+}
+
 export function findNodeModuleExecutable(path: string, moduleName: string) {
-    const nodeModulePath = getNodeModulesPath(path);
+    const nodeModulePath = getFileOrDirInPath(path, "node_modules");
     const executable = node_path.resolve(nodeModulePath, ".bin", moduleName);
     canExecutePath(executable);
     return executable;
 }
 
-function getNodeModulesPath(path: string) {
-    const nodeModulesPath = node_path.resolve(getProjectDir(path), "node_modules");
-    canAccessPath(nodeModulesPath);
-    return nodeModulesPath;
+function getFileOrDirInPath(path: string, fileOrDir: string) {
+    const resolvedPath = node_path.resolve(getProjectDir(path), fileOrDir);
+    canAccessPath(resolvedPath);
+    return resolvedPath;
 }
 
 function getProjectDir(path: string) {
