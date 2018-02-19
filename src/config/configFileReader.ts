@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { debugLog } from "../helpers/debugTools";
 import { canAccessPath } from "../helpers/fileSystemHelpers";
 import { isValidArray, isValidBoolean, isValidObject, isValidString } from "../helpers/typeCheckHelpers";
-import { MtscConfig, ProjectConfig } from "./configSpec";
+import { MtscConfig, ProjectConfig, TslintCfg } from "./configSpec";
 
 const DEFAULT_CONFIG_NAME = "mtsc.json";
 
@@ -25,6 +25,8 @@ export function findMtscConfig(path?: string): MtscConfig | null {
 }
 
 export function validateMtscConfig(config: MtscConfig) {
+    debugLog("Validating mtsc config...");
+
     if (typeof config !== "object") {
         throw new Error("Config isn't an object");
     }
@@ -41,11 +43,15 @@ export function validateMtscConfig(config: MtscConfig) {
         throw new Error("Compiler isn't a string");
     }
 
+    if (config.tslint) validateTslintConfig(config.tslint);
+
     if (isValidArray(config.projects)) {
         config.projects.forEach(validateProjectConfig);
     } else {
         throw new Error("Projects isn't an array");
     }
+
+    debugLog("Mtsc config is valid!");
 }
 
 function validateProjectConfig(projectConfig: ProjectConfig) {
@@ -67,5 +73,29 @@ function validateProjectConfig(projectConfig: ProjectConfig) {
 
     if (projectConfig.watch && !isValidBoolean(projectConfig.watch)) {
         throw new Error("Project watch is invalid");
+    }
+
+    if (projectConfig.tslint) validateTslintConfig(projectConfig.tslint);
+}
+
+export function validateTslintConfig(tslintConfig: TslintCfg) {
+    if (isValidString(tslintConfig) || isValidBoolean(tslintConfig)) {
+        return;
+    }
+
+    if (!isValidObject(tslintConfig)) {
+        throw new Error("Tslint config is neither a valid object, boolean or a string");
+    }
+
+    if (tslintConfig.autofix && !isValidBoolean(tslintConfig.autofix)) {
+        throw new Error("Tslint: autofix is invalid");
+    }
+
+    if (tslintConfig.rulesFile && !isValidString(tslintConfig.rulesFile)) {
+        throw new Error("Tslint: rules file is invalid");
+    }
+
+    if (tslintConfig.tsconfig && !isValidString(tslintConfig.tsconfig)) {
+        throw new Error("Tslint: tsconfig is invalid");
     }
 }
