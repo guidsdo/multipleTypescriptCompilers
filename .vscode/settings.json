@@ -29,28 +29,11 @@
   "typescript.referencesCodeLens.enabled": true,
   "typescript.implementationsCodeLens.enabled": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
+  "typescript.reportStyleChecksAsWarnings": false,
 
   // Plugins
   "prettier.tabWidth": 4,
   "prettier.printWidth": 120,
-
-  "tslint.enable": true,
-  "tslint.rulesDirectory": [
-    "./node_modules/tslint-eslint-rules/dist/rules",
-    "./node_modules/tslint-react/rules"
-  ],
-
-  "typescriptHero.resolver.stringQuoteStyle": "\"",
-
-  "typescript.extension.sortImports.quoteStyle": "double",
-  "typescript.extension.sortImports.sortOnSave": true,
-  "typescript.extension.sortImports.sortMethod": "path",
-  "typescript.extension.sortImports.maxNamedImportsInSingleLine": 6,
-  "typescript.extension.sortImports.pathSortOrder": [
-    "package",
-    "relativeUpLevel",
-    "relativeDownLevel"
-  ],
 
   "csscomb.formatOnSave": true
 }
