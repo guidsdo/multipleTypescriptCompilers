@@ -36,6 +36,8 @@ export type MtscConfig = {
     watch?: boolean;
     // Default: Enabled | Rulesfile | TslintConfigObject
     tslint?: boolean | string | TslintCfgObject;
+    // Same setting as in tslint-language-service (alwaysShowRuleFailuresAsWarnings)
+    tslintAlwaysShowAsWarning?: boolean;
     // Default: Path to the executable tsc
     compiler?: string;
     projects: ProjectConfig[];

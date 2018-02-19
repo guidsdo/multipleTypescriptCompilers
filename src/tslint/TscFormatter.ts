@@ -3,6 +3,8 @@ import { getRelativePath } from "../index";
 
 // Export as Formatter for Tslint's autofind feature
 export class Formatter extends Formatters.AbstractFormatter {
+    public static alwaysShowRuleFailuresAsWarnings: boolean = false;
+
     public static metadata: IFormatterMetadata = {
         formatterName: "tsc",
         description: "Lists files containing lint errors.",
@@ -16,7 +18,9 @@ export class Formatter extends Formatters.AbstractFormatter {
 
     formatFailure(failure: RuleFailure): string {
         const fileName = getRelativePath(failure.getFileName());
-        const severity = failure.getRuleSeverity().toLocaleUpperCase();
+        const severity = Formatter.alwaysShowRuleFailuresAsWarnings
+            ? "WARNING"
+            : failure.getRuleSeverity().toLocaleUpperCase();
         const start = failure.getStartPosition();
         const lineStart = start.getLineAndCharacter().line + 1;
         const charStart = start.getLineAndCharacter().character + 1;
