@@ -2,10 +2,10 @@ import * as moment from "moment";
 import { debugLog } from "../helpers/debugTools";
 import { Project, ProjectSettings } from "./Project";
 
-type logType = "COMPILING" | "COMPLETE" | "FINAL";
+type logType = "COMPILING" | "COMPLETE" | "IDLE";
 
 export class ProjectsWatcher {
-    private lastLog: logType = "COMPILING";
+    private lastLog: logType = "IDLE";
     private projects: Project[] = [];
 
     addProject(projectArgs: ProjectSettings) {
@@ -29,7 +29,7 @@ export class ProjectsWatcher {
     }
 
     projectCompilationStart = () => {
-        if (this.lastLog === "COMPLETE") {
+        if (this.lastLog === "IDLE" || this.lastLog === "COMPLETE") {
             this.logStatus("COMPILING");
         }
     };
@@ -54,7 +54,7 @@ export class ProjectsWatcher {
         this.projects.splice(this.projects.indexOf(project), 1);
 
         if (!this.projects.length) {
-            this.logStatus("FINAL");
+            this.logStatus("IDLE");
         }
     };
 
@@ -71,13 +71,17 @@ export class ProjectsWatcher {
     }
 
     private logStatus(type: logType) {
-        if (type === "COMPILING") {
-            console.log(`${this.getTimestamp()} - File change detected. Starting incremental compilation...`);
+        let message = "";
+        if (type === "COMPILING" && this.lastLog === "IDLE") {
+            message = "Starting compilation in watch mode...";
+        } else if (type === "COMPILING") {
+            message = "File change detected. Starting incremental compilation...";
         } else if (type === "COMPLETE") {
-            console.log(`${this.getTimestamp()} - Compilation complete. Watching for file changes.`);
+            message = "Compilation complete. Watching for file changes.";
         } else {
-            console.log(`${this.getTimestamp()} - Done compiling all projects.`);
+            message = "Done compiling all projects.";
         }
+        console.log(`${this.getTimestamp()} - ${message}`);
         this.lastLog = type;
     }
 }
