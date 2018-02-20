@@ -4,6 +4,8 @@ import { DEBUG_MODE } from "../helpers/debugTools";
 import { debugLog } from "../helpers/debugTools";
 import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
+const DISALLOWED_DEBUG_CHARS = /\u001bc|\x1Bc/g;
+
 export type ProjectSettings = {
     watch: boolean;
     path: string;
@@ -37,7 +39,7 @@ export class Project {
 
         debugLog("Executing following command", compileCommand);
 
-        const execOptions = { async: true, silent: !DEBUG_MODE };
+        const execOptions = { async: true, silent: true };
 
         const child = sh.exec(compileCommand, execOptions) as ChildProcess;
 
@@ -50,6 +52,7 @@ export class Project {
             this.resultBuffer = [];
         }
 
+        data = DEBUG_MODE ? data.replace(DISALLOWED_DEBUG_CHARS, "") : data;
         if (data.match(/Compilation complete\. Watching for file changes/)) {
             debugLog("Compilation was complete, now printing everything");
             this.lastResult = this.resultBuffer.join("\n");
@@ -57,7 +60,6 @@ export class Project {
             this.compiledCb();
 
             if (this.tslintRunner) {
-                debugLog("Tslint found for project", this.args.path);
                 this.compilingCb();
                 this.tslintRunner.startLinting();
             }
