@@ -1,19 +1,19 @@
 import { debugLog, setDebugMode } from "../helpers/debugTools";
-import { findNodeModuleExecutable, findJsonFile } from "../helpers/fileSystemHelpers";
+import { findNodeModuleExecutable, findJsonFile, getProjectDir } from "../helpers/fileSystemHelpers";
 import { isValidString, isValidBoolean, isValidObject } from "../helpers/typeCheckHelpers";
 import { ProjectsWatcher } from "../projectWatcher/ProjectsWatcher";
 import { ProjectSettings } from "../projectWatcher/Project";
 import { MtscConfig, TslintCfgObject, TslintCfg } from "./configSpec";
+import { TslintSettings } from "../tslint/TslintRunner";
 
-const TSLINT_CFG = "tslint.json";
-const TSC_CFG = "tsconfig.json";
+type GlobalTslint = { autofix: boolean; rulesFile?: string; enabled?: boolean };
 
 export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     setDebugMode(!!mtscCfg.debug);
 
-    const globalTslintCfg = initTslintConfig(mtscCfg.tslint, ".", { rulesFile: "", autofix: false, enabled: false });
+    const globalTslintCfg = initGlobalTslintCfg(mtscCfg.tslint);
     const projectsWatcher = new ProjectsWatcher();
-    mtscCfg.projects.forEach(stringOrCfg => {
+    for (let stringOrCfg of mtscCfg.projects) {
         let projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;
         projectCfg.watch = isValidBoolean(projectCfg.watch) ? projectCfg.watch : !!mtscCfg.watch;
 
@@ -27,61 +27,94 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
             `Adding project:\nPath: ${projectCfg.path}\nwatch: ${!!projectCfg.watch}\nCompiler: ${projectCfg.compiler}`
         );
 
-        const tscProjectSettings: ProjectSettings = {
+        const tslintCfg = getTslintSettings(globalTslintCfg, projectCfg.path, projectCfg.tslint);
+        debugLog("Setting the following tslint rules", tslintCfg);
+
+        const projectSettings: ProjectSettings = {
             watch: projectCfg.watch,
             path: projectCfg.path,
-            compiler: projectCfg.compiler
+            compiler: projectCfg.compiler,
+            tslint: tslintCfg
         };
-
-        initTslintConfig(projectCfg.tslint, tscProjectSettings.path, globalTslintCfg);
-
-        projectsWatcher.addProject(tscProjectSettings);
-    });
+        projectsWatcher.addProject(projectSettings);
+    }
 
     return projectsWatcher;
 }
 
-function initTslintConfig(
-    tslintCfg: TslintCfg | undefined,
-    path: string,
-    defaultCfg: TslintCfgObject,
-    project?: boolean
-) {
-    let newTslintCfg: TslintCfg = defaultCfg;
-
-    if (tslintCfg === undefined) {
-        return newTslintCfg;
-    }
-
-    // Beyond this point, tslint is enabled or explicitely disabled
-    newTslintCfg.enabled = true;
-
-    if (isValidString(tslintCfg)) {
-        newTslintCfg.rulesFile = findJsonFile(path + tslintCfg, TSLINT_CFG);
-    } else if (isValidBoolean(tslintCfg)) {
-        newTslintCfg.enabled = isValidBoolean(tslintCfg);
+function initGlobalTslintCfg(tslint?: string | boolean | TslintCfgObject): GlobalTslint {
+    const result: GlobalTslint = { autofix: false };
+    if (tslint === undefined) {
+        // Do nothing
+    } else if (isValidString(tslint)) {
+        result.rulesFile = tslint;
+        result.enabled = true;
+    } else if (isValidBoolean(tslint)) {
+        result.enabled = tslint;
         try {
-            newTslintCfg.rulesFile = findJsonFile(path, TSLINT_CFG);
-        } catch {}
-    } else if (isValidObject(tslintCfg)) {
-        newTslintCfg.autofix = isValidBoolean(tslintCfg.autofix) ? tslintCfg.autofix : newTslintCfg.autofix;
-        newTslintCfg.enabled = isValidBoolean(tslintCfg.enabled) ? tslintCfg.enabled : newTslintCfg.enabled;
-
-        if (isValidString(tslintCfg.rulesFile)) {
-            newTslintCfg.rulesFile = findJsonFile(path + tslintCfg.rulesFile, TSLINT_CFG);
-        } else if (!newTslintCfg.rulesFile) {
-            try {
-                newTslintCfg.rulesFile = findJsonFile(path, TSLINT_CFG);
-            } catch {}
+            findJsonFile(".", TSLINT_CFG);
+        } catch {
+            // No tslint found? Let's hope each project has one, otherwise we should error
         }
-
-        if (tslintCfg.tsconfig && isValidString(tslintCfg.tsconfig)) {
-            // Search given
-            findJsonFile(path + tslintCfg.tsconfig, TSC_CFG);
-        } else if (project) {
-            // This will use the project tsconfig of given and otherwise search for one in the same folder
-            findJsonFile(path, TSC_CFG);
-        }
+    } else if (isValidObject(tslint)) {
+        result.autofix = isValidBoolean(tslint.autofix) ? tslint.autofix : false;
+        result.enabled = isValidBoolean(tslint.enabled) ? tslint.enabled : undefined;
+        result.rulesFile = isValidString(tslint.rulesFile) ? tslint.rulesFile : undefined;
     }
-    return newTslintCfg;
+    debugLog("Done initiating global tslint cfg", result);
+    return result;
+}
+
+function getTslintSettings(globalCfg: GlobalTslint, path: string, config?: TslintCfg): TslintSettings | undefined {
+    const projectDir = getProjectDir(path);
+    if ((globalCfg.enabled && config === undefined) || (isValidBoolean(config) && config)) {
+        return {
+            autoFix: getTslintAutofix(globalCfg),
+            rulesFile: getTslint(globalCfg, projectDir),
+            tsconfigPath: getTsConfig(path)
+        };
+    }
+
+    if (globalCfg.enabled !== false && isValidString(config)) {
+        return {
+            autoFix: getTslintAutofix(globalCfg),
+            rulesFile: getTslint(globalCfg, projectDir, config),
+            tsconfigPath: getTsConfig(path)
+        };
+    } else if (globalCfg.enabled !== false && isValidObject(config) && (config as TslintCfgObject).enabled !== false) {
+        const validCfg: TslintCfgObject & { tsconfig?: string } = config as any;
+        return {
+            autoFix: getTslintAutofix(globalCfg, validCfg.autofix),
+            rulesFile: getTslint(globalCfg, projectDir, validCfg.rulesFile),
+            tsconfigPath: getTsConfig(path, validCfg.tsconfig)
+        };
+    }
+    return undefined;
+}
+
+function getTsConfig(path: string, tsconfig?: string) {
+    const TSC_CFG = "tsconfig.json";
+    debugLog("Tslint: Looking for tsconfig in path", path);
+    if (isValidString(tsconfig)) {
+        return findJsonFile(path, tsconfig);
+    }
+    return findJsonFile(path, TSC_CFG);
+}
+
+const TSLINT_CFG = "tslint.json";
+function getTslint(defaultCfg: GlobalTslint, path: string, tslint?: string) {
+    debugLog("Tslint: Looking for tslint in path", path);
+    let result;
+    if (isValidString(tslint)) result = findJsonFile(path, tslint);
+    else if (isValidString(defaultCfg.rulesFile)) result = defaultCfg.rulesFile;
+    else result = findJsonFile(path, TSLINT_CFG);
+
+    debugLog("Tslint: Found this tslint", result);
+    return result;
+}
+
+function getTslintAutofix(defaultCfg: GlobalTslint, autofix?: boolean) {
+    if (isValidBoolean(autofix)) return autofix;
+
+    return defaultCfg.autofix;
 }

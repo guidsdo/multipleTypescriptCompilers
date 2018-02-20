@@ -3,6 +3,7 @@ import * as node_path from "path";
 import { debugLog } from "./debugTools";
 
 export function findJsonFile(path: string, fallbackFileName: string) {
+    debugLog("Find json file in [path] [fallbackFilename]", path + " " + fallbackFileName);
     canAccessPath(path);
     const pathInfo = node_fs.lstatSync(path);
 
@@ -10,12 +11,15 @@ export function findJsonFile(path: string, fallbackFileName: string) {
     if (pathInfo.isDirectory()) {
         const jsonPath = getFileOrDirInPath(path, fallbackFileName);
         canAccessPath(jsonPath);
+
+        debugLog("Found a json file in given path", jsonPath);
         return jsonPath;
     }
 
     debugLog("Deciding if given path is a json file", path);
     if (path.endsWith(".json")) {
         canAccessPath(path);
+        debugLog("Found out that given path is a json file", path);
         return path;
     }
 
@@ -37,7 +41,7 @@ function getFileOrDirInPath(path: string, fileOrDir: string) {
     return resolvedPath;
 }
 
-function getProjectDir(path: string) {
+export function getProjectDir(path: string) {
     canAccessPath(path);
     const pathInfo = node_fs.lstatSync(path);
 

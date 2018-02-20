@@ -1,9 +1,8 @@
 import { Linter, Configuration } from "tslint";
-import { findJsonFile } from "../helpers";
 import { Formatter } from "./TscFormatter";
 
 export type TslintSettings = {
-    tslintPath: string;
+    rulesFile: string;
     tsconfigPath: string;
     autoFix: boolean;
 };
@@ -18,8 +17,8 @@ export class TslintRunner {
     private autofix = false;
 
     constructor(tslintArgs: TslintSettings, doneCb: () => void) {
-        this.tslintCfg = findJsonFile(tslintArgs.tslintPath, "tslint.json");
-        this.tsconfig = findJsonFile(tslintArgs.tslintPath, "tsconfig.json");
+        this.tslintCfg = tslintArgs.rulesFile;
+        this.tsconfig = tslintArgs.tsconfigPath;
         this.doneCb = doneCb;
     }
 
