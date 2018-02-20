@@ -5,6 +5,8 @@ import { debugLog } from "../helpers/debugTools";
 import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
 const DISALLOWED_DEBUG_CHARS = /\u001bc|\x1Bc/g;
+const TSC_COMPILATION_COMPLETE = /Compilation complete\. Watching for file changes/;
+const TSC_COMPILATION_STARTED = /File change detected. Starting incremental compilation|Starting compilation in watch mode.../;
 
 export type ProjectSettings = {
     watch: boolean;
@@ -53,7 +55,7 @@ export class Project {
         }
 
         data = DEBUG_MODE ? data.replace(DISALLOWED_DEBUG_CHARS, "") : data;
-        if (data.match(/Compilation complete\. Watching for file changes/)) {
+        if (data.match(TSC_COMPILATION_COMPLETE)) {
             debugLog("Compilation was complete, now printing everything");
             this.lastResult = this.resultBuffer.join("\n");
             this.resultBuffer = null;
@@ -63,7 +65,7 @@ export class Project {
                 this.compilingCb();
                 this.tslintRunner.startLinting();
             }
-        } else if (data.match(/File change detected. Starting incremental compilation/)) {
+        } else if (data.match(TSC_COMPILATION_STARTED)) {
             if (this.tslintRunner) this.tslintRunner.stopLinting();
             this.compilingCb();
         } else {
