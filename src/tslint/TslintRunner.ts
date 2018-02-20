@@ -37,13 +37,11 @@ export class TslintRunner {
             linter.lint(file, fileContents, configuration);
         }
 
-        if (!this.running) {
-            // If aborted, showing results isn't desired.
-            return;
+        if (this.running) {
+            // Only show results if linting is completely done.
+            this.running = false;
+            this.result = linter.getResult().output;
         }
-
-        this.running = false;
-        this.result = linter.getResult().output;
         this.doneCb();
     }
 
