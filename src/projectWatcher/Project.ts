@@ -57,8 +57,9 @@ export class Project {
             this.compiledCb();
 
             if (this.tslintRunner) {
-                this.tslintRunner.startLinting();
+                debugLog("Tslint found for project", this.args.path);
                 this.compilingCb();
+                this.tslintRunner.startLinting();
             }
         } else if (data.match(/File change detected. Starting incremental compilation/)) {
             if (this.tslintRunner) this.tslintRunner.stopLinting();
@@ -69,8 +70,9 @@ export class Project {
     };
 
     getLastResult() {
-        const result = [this.lastResult];
-        if (this.tslintRunner && !this.tslintRunner.isRunning) {
+        const result = [];
+        if (this.lastResult) result.push(this.lastResult);
+        if (this.tslintRunner && !this.tslintRunner.isRunning()) {
             const tslintResult = this.tslintRunner.getResult();
             if (tslintResult) result.push(this.tslintRunner.getResult());
         }
@@ -79,7 +81,7 @@ export class Project {
     }
 
     isCompiling() {
-        return !!this.resultBuffer;
+        return !!this.resultBuffer || (this.tslintRunner ? this.tslintRunner!.isRunning() : false);
     }
 
     equals(otherProjectPath: string) {

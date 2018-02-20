@@ -56,6 +56,6 @@ export class TslintRunner {
     }
 
     isRunning() {
-        return this.isRunning;
+        return this.running;
     }
 }
