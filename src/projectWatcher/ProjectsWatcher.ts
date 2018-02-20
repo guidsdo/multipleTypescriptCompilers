@@ -39,7 +39,7 @@ export class ProjectsWatcher {
             .map(projectCompiler => {
                 return projectCompiler.getLastResult();
             })
-            .join("");
+            .join("\n");
 
         console.log(result);
         this.logStatus("COMPLETE");
