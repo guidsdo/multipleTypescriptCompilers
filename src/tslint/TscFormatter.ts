@@ -19,14 +19,16 @@ export class Formatter extends Formatters.AbstractFormatter {
     formatFailure(failure: RuleFailure): string {
         const fileName = getRelativePath(failure.getFileName());
         const severity = Formatter.alwaysShowRuleFailuresAsWarnings
-            ? "WARNING"
-            : failure.getRuleSeverity().toLocaleUpperCase();
+            ? "warning"
+            : failure.getRuleSeverity().toLocaleLowerCase();
         const start = failure.getStartPosition();
         const lineStart = start.getLineAndCharacter().line + 1;
         const charStart = start.getLineAndCharacter().character + 1;
         const issue = failure.getFailure();
 
-        // Format it as TSC and use TS2515 because the plugin uses it..
+        // Format it as TSC..
+        // https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher
+        // and use TS2515 because the plugin uses it..
         // See: https://github.com/angelozerr/tslint-language-service/blob/master/src/index.ts#L17
         return `${fileName}(${lineStart},${charStart}): ${severity} TS2515: ${issue} (${failure.getRuleName()})`;
     }
