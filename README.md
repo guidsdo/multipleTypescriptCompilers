@@ -1,5 +1,5 @@
 # Multiple Typescript Compilers
-_Run multiple typescript compilers concurrently at the same time. Usage: `mtsc [directories/tsconfigs...]` Example: `mtsc client server middleware/new_tsconfig.json`_
+_Monorepo solution for multiple typescript projects (tslint support!). Run multiple typescript compilers concurrently at the same time._
 
 ## Usage
 ### Cli:
@@ -32,18 +32,52 @@ This always prints the compilation output of the other projects when a new compi
 ## mtsc.json spec
 ```typescript
 export type ProjectConfig =
-    | string
+    | string // Project path (doesn't have to be path/tsconfig.json but is recommended)
     | {
+          // Project path (doesn't have to be path/tsconfig.json but is recommended)
           path: string;
+          // Watch this project? Default is true, since that is the whole purpose of creating mtsc
           watch?: boolean;
+          tslint?: TslintCfg;
+          // Path to the executable tsc
           compiler?: string;
       };
 
+// Specific settings win from global settings. Global settings can be seen as default settings for each project.
 export type MtscConfig = {
+    // Use MTSC Debug for extensive logging of what is happening
     debug?: boolean;
+    // Default: watch project (default value is true)
     watch?: boolean;
+    // Default: Enabled | Rulesfile | TslintConfigObject
+    tslint?: boolean | string | TslintCfgObject;
+    // Same setting as in tslint-language-service (alwaysShowRuleFailuresAsWarnings)
+    tslintAlwaysShowAsWarning?: boolean;
+    // Default: Path to the executable tsc
     compiler?: string;
     projects: ProjectConfig[];
+};
+```
+
+### For tslint support, see this guide: https://github.com/angelozerr/tslint-language-service
+NOTE: Don't forget to set the typescript compiler in vscode (it's in the guide)
+
+```typescript
+export type TslintCfg =
+    | boolean // Enable tslint? Will search in project specific folder or global tslint file (will search to tslint.json if not provided)
+    | string // Rules file
+    | TslintCfgObject & {
+          // Will search in project specific folder or else in root dir to tsconfig.json if not provided. NOTE: Must be a file name (not a full path).
+          tsconfig?: string;
+      };
+
+export type TslintCfgObject = {
+    // Default value is true
+    enabled?: boolean;
+    // Default value is false
+    autofix?: boolean;
+    // Will search in project specific folder or else in root dir to tslint.json if not provided. NOTE: Must be a file name (not a full path).
+    rulesFile?: string;
 };
 ```
 
@@ -111,7 +145,7 @@ export type MtscConfig = {
 ## Roadmap
 * ~~Add json config option~~
 * ~~Use vscode tasks 2.0 in example~~
-* Add tslint option for each project(!)
+* ~~Add tslint option for each project(!)~~
 * ~~Specify specific options per project~~
 
 ---
