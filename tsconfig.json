@@ -20,7 +20,7 @@
             {
                 "name": "tslint-language-service",
                 "configFile": "./tslint.json",
-                "supressWhileTypeErrorsPresent": false
+                "alwaysShowRuleFailuresAsWarnings": true
             }
         ]
     },
