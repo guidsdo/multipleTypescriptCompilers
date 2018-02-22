@@ -1,5 +1,6 @@
 .vscode
 // bin
+images
 // lib
 node_modules
 src
