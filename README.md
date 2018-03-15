@@ -20,13 +20,17 @@ I began this project because vscode can't handle the output of multiple typescri
 ### How it was fixed:
 This always prints the compilation output of the other projects when a new compilation is done. It also makes sure that the interpreter knows there is still a compilation going on by printing a compilation start message when there is still one running.
 
+### Known issues
+This package has a peerdependency on tslint. The tool allows you to not use tslint, but will fail if tslint cannot be found. Currently nobody has complained about it (or anything for that matter) so it won't be fixed. Most serious typescript projects have tslint anyway.
+
 ## Options
 ```
   -d, --debug
-  -c, --config [path_to_config]  Path to mtsc config
-  -w, --watch                    Watch the given projects (default false)
-  -t, --tsc [path_to_tsc]        Path to compiler for all projects (will search in exec dir if not given)
-  -h, --help                     output usage information
+  -c, --config [path_to_config]     Path to mtsc config
+  -w, --watch                       Watch the given projects (default false)
+  -t, --tsc [path_to_tsc]           Path to compiler for all projects (will search in exec dir if not given)
+  -l, --lint [path_to_tslintrules]  Path to tslint rules for all projects (will search if not given)
+  -h, --help                        output usage information
 ```
 
 ## mtsc.json spec

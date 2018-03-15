@@ -12,6 +12,7 @@ commander
     .option("-c, --config [path_to_config]", "Path to mtsc config")
     .option("-w, --watch", "Watch the given projects (default false)")
     .option("-t, --tsc [path_to_tsc]", "Path to compiler for all projects (will search in exec dir if not given)")
+    .option("-l, --lint [path_to_tslintrules]", "Path to tslint rules for all projects (will search if not given)")
     .parse(process.argv);
 
 setDebugMode(!!commander.debug);
@@ -32,7 +33,7 @@ if (commander.tsc && isValidString(commander.tsc)) {
     debugLog("Global compiler set to", commander.tsc);
     mtscConfig.compiler = commander.tsc;
 } else if (commander.tsc && isValidBoolean(commander.tsc)) {
-    debugLog("Compiler command is boolean (true), so now searching for tsc executable");
+    debugLog("Compiler command is true, so now searching for tsc executable");
 
     mtscConfig.compiler = findNodeModuleExecutable(".", "tsc");
 
@@ -45,6 +46,18 @@ if (commander.tsc && isValidString(commander.tsc)) {
 if (commander.watch) {
     debugLog("Global watch set to", commander.watch);
     mtscConfig.watch = commander.watch;
+}
+
+debugLog("Checking if global tslint rules is given", commander.lint);
+if (commander.lint && isValidString(commander.lint)) {
+    debugLog("Global tslint rules set to", commander.lint);
+    mtscConfig.tslint = commander.lint;
+} else if (commander.lint && isValidBoolean(commander.lint)) {
+    debugLog("Tslint rules is true");
+    mtscConfig.tslint = commander.lint;
+} else if (commander.lint) {
+    debugLog("Invalid lint option given", commander.lint);
+    throw new Error("Invalid lint option given");
 }
 
 debugLog("Checking if there are project folders or tsconfigs given", commander.args);
