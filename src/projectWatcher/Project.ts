@@ -12,6 +12,7 @@ export type ProjectSettings = {
     watch: boolean;
     path: string;
     compiler: string;
+    noEmit?: boolean;
     tslint?: TslintSettings;
 };
 
@@ -36,8 +37,8 @@ export class Project {
     }
 
     startCompiling() {
-        const { compiler, watch, path } = this.args;
-        const compileCommand = `${compiler} ${watch ? "-w" : ""} -p ${path}`;
+        const { compiler, watch, path, noEmit } = this.args;
+        const compileCommand = [compiler, watch ? "-w" : "", noEmit === true ? "--noEmit" : "", `-p ${path}`].join(" ");
 
         debugLog("Executing following command", compileCommand);
 

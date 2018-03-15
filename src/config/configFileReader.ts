@@ -44,6 +44,10 @@ export function validateMtscConfig(config: MtscConfig) {
         throw new Error("Compiler isn't a string");
     }
 
+    if (config.noEmit && !isValidBoolean(config.compiler)) {
+        throw new Error("NoEmit isn't a valid boolean");
+    }
+
     if (config.tslint) validateTslintConfig(config.tslint);
     if (isValidBoolean(config.tslintAlwaysShowAsWarning))
         TscFormatter.alwaysShowRuleFailuresAsWarnings = config.tslintAlwaysShowAsWarning;
@@ -76,6 +80,10 @@ function validateProjectConfig(projectConfig: ProjectConfig) {
 
     if (projectConfig.watch && !isValidBoolean(projectConfig.watch)) {
         throw new Error("Project watch is invalid");
+    }
+
+    if (projectConfig.noEmit && !isValidBoolean(projectConfig.compiler)) {
+        throw new Error("NoEmit isn't a valid boolean");
     }
 
     if (projectConfig.tslint) validateTslintConfig(projectConfig.tslint);

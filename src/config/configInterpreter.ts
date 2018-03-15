@@ -6,6 +6,7 @@ import { ProjectSettings } from "../projectWatcher/Project";
 import { MtscConfig, TslintCfgObject, TslintCfg } from "./configSpec";
 import { TslintSettings } from "../tslint/TslintRunner";
 
+const TSLINT_CFG = "tslint.json";
 type GlobalTslint = { autofix: boolean; rulesFile?: string; enabled?: boolean };
 
 export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
@@ -23,6 +24,8 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
                 : findNodeModuleExecutable(projectCfg.path, "tsc");
         }
 
+        if (!isValidBoolean(projectCfg.noEmit)) projectCfg.noEmit = mtscCfg.noEmit;
+
         debugLog(
             `Adding project:\nPath: ${projectCfg.path}\nwatch: ${!!projectCfg.watch}\nCompiler: ${projectCfg.compiler}`
         );
@@ -34,6 +37,7 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
             watch: projectCfg.watch,
             path: projectCfg.path,
             compiler: projectCfg.compiler,
+            noEmit: projectCfg.noEmit,
             tslint: tslintCfg
         };
         projectsWatcher.addProject(projectSettings);
@@ -101,7 +105,6 @@ function getTsConfig(path: string, tsconfig?: string) {
     return findJsonFile(path, TSC_CFG);
 }
 
-const TSLINT_CFG = "tslint.json";
 function getTslint(defaultCfg: GlobalTslint, path: string, tslint?: string) {
     debugLog("Tslint: Looking for tslint in path", path);
     let result;

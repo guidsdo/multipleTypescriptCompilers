@@ -34,6 +34,8 @@ This package has a peerdependency on tslint. The tool allows you to not use tsli
 ```
 
 ## mtsc.json spec
+[Spec copied from here](https://github.com/guidojo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
+
 ```typescript
 export type ProjectConfig =
     | string // Project path (doesn't have to be path/tsconfig.json but is recommended)
@@ -42,6 +44,8 @@ export type ProjectConfig =
           path: string;
           // Watch this project? Default is true, since that is the whole purpose of creating mtsc
           watch?: boolean;
+          // Do not emit outputs. Default: use tsconfigs option.
+          noEmit?: boolean | undefined;
           tslint?: TslintCfg;
           // Path to the executable tsc
           compiler?: string;
@@ -51,9 +55,11 @@ export type ProjectConfig =
 export type MtscConfig = {
     // Use MTSC Debug for extensive logging of what is happening
     debug?: boolean;
-    // Default: watch project (default value is true)
+    // Watch project (default value is true)
     watch?: boolean;
-    // Default: Enabled | Rulesfile | TslintConfigObject
+    // Do not emit outputs for all projects. Default: use tsconfigs option
+    noEmit?: boolean | undefined;
+    // Default: false. Options: Enabled | Rulesfile | TslintConfigObject
     tslint?: boolean | string | TslintCfgObject;
     // Same setting as in tslint-language-service (alwaysShowRuleFailuresAsWarnings)
     tslintAlwaysShowAsWarning?: boolean;
@@ -64,7 +70,7 @@ export type MtscConfig = {
 ```
 
 ### For tslint support, see this guide: https://github.com/angelozerr/tslint-language-service
-NOTE: Don't forget to set the typescript compiler in vscode (it's in the guide)
+NOTE: Don't forget to set the typescript compiler in vscode (it's in the guide).
 
 ```typescript
 export type TslintCfg =
