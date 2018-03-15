@@ -1,5 +1,6 @@
 import { Linter, Configuration } from "tslint";
 import { Formatter } from "./TscFormatter";
+import { debugLog } from "../helpers/debugTools";
 
 export type TslintSettings = {
     rulesFile: string;
@@ -23,6 +24,11 @@ export class TslintRunner {
     }
 
     startLinting() {
+        debugLog("Starting tslint with options", {
+            tslintCfg: this.tslintCfg,
+            tsconfig: this.tsconfig,
+            autofix: this.autofix
+        });
         this.result = "";
         this.running = true;
 
@@ -46,6 +52,9 @@ export class TslintRunner {
     }
 
     stopLinting() {
+        if (this.running) {
+            debugLog("Tslint aborted");
+        }
         this.running = false;
     }
 
