@@ -1,10 +1,9 @@
 import { ChildProcess } from "child_process";
 import * as sh from "shelljs";
-import { DEBUG_MODE } from "../helpers/debugTools";
 import { debugLog } from "../helpers/debugTools";
 import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
-const DISALLOWED_DEBUG_CHARS = /\u001bc|\x1Bc/g;
+const DISALLOWED_DEBUG_CHARS = /\u001bc|\x1Bc|\033c/g;
 const TSC_COMPILATION_COMPLETE = /Compilation complete\. Watching for file changes/;
 const TSC_COMPILATION_STARTED = /File change detected. Starting incremental compilation|Starting compilation in watch mode.../;
 
@@ -12,6 +11,7 @@ export type ProjectSettings = {
     watch: boolean;
     path: string;
     compiler: string;
+    preserveWatchOutput: boolean;
     noEmit?: boolean;
     tslint?: TslintSettings;
 };
@@ -55,7 +55,8 @@ export class Project {
             this.resultBuffer = [];
         }
 
-        data = DEBUG_MODE ? data.replace(DISALLOWED_DEBUG_CHARS, "") : data;
+        data = this.args.preserveWatchOutput ? data.replace(DISALLOWED_DEBUG_CHARS, "") : data;
+
         if (data.match(TSC_COMPILATION_COMPLETE)) {
             debugLog("Compilation was complete, now printing everything");
             this.lastResult = this.resultBuffer.join("\n");

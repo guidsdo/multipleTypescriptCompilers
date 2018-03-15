@@ -11,6 +11,7 @@ commander
     .option("-d, --debug", "Add way too much logging")
     .option("-c, --config [path_to_config]", "Path to mtsc config")
     .option("-w, --watch", "Watch the given projects (default false)")
+    .option("-p, --preserveWatchOutput", "Don't throw away watch output (default true in debug mode)")
     .option("--noEmit", "Do not emit outputs")
     .option("-t, --tsc [path_to_tsc]", "Path to compiler for all projects (will search in exec dir if not given)")
     .option("-l, --lint [path_to_tslintrules]", "Path to tslint rules for all projects (will search if not given)")
@@ -64,6 +65,11 @@ if (commander.lint && isValidString(commander.lint)) {
 if (commander.noEmit) {
     debugLog("Global noEmit set to", commander.noEmit);
     mtscConfig.noEmit = commander.noEmit;
+}
+
+if (commander.preserveWatchOutput) {
+    debugLog("PreserveWatchOutput set to", commander.preserveWatchOutput);
+    mtscConfig.preserveWatchOutput = commander.preserveWatchOutput;
 }
 
 debugLog("Checking if there are project folders or tsconfigs given", commander.args);

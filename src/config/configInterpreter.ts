@@ -1,4 +1,4 @@
-import { debugLog, setDebugMode } from "../helpers/debugTools";
+import { debugLog, setDebugMode, DEBUG_MODE } from "../helpers/debugTools";
 import { findNodeModuleExecutable, findJsonFile, getProjectDir } from "../helpers/fileSystemHelpers";
 import { isValidString, isValidBoolean, isValidObject } from "../helpers/typeCheckHelpers";
 import { ProjectsWatcher } from "../projectWatcher/ProjectsWatcher";
@@ -14,6 +14,9 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
 
     const globalTslintCfg = initGlobalTslintCfg(mtscCfg.tslint);
     const projectsWatcher = new ProjectsWatcher();
+
+    if (!isValidBoolean(mtscCfg.preserveWatchOutput)) mtscCfg.preserveWatchOutput = DEBUG_MODE;
+
     for (let stringOrCfg of mtscCfg.projects) {
         let projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;
         projectCfg.watch = isValidBoolean(projectCfg.watch) ? projectCfg.watch : !!mtscCfg.watch;
@@ -34,6 +37,7 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
         debugLog("Setting the following tslint rules", tslintCfg);
 
         const projectSettings: ProjectSettings = {
+            preserveWatchOutput: mtscCfg.preserveWatchOutput,
             watch: projectCfg.watch,
             path: projectCfg.path,
             compiler: projectCfg.compiler,
