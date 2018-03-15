@@ -82,10 +82,6 @@ function validateProjectConfig(projectConfig: ProjectConfig) {
         throw new Error("Project compiler is invalid");
     }
 
-    if (projectConfig.watch && !isValidBoolean(projectConfig.watch)) {
-        throw new Error("Project watch is invalid");
-    }
-
     if (projectConfig.noEmit && !isValidBoolean(projectConfig.compiler)) {
         throw new Error("NoEmit isn't a valid boolean");
     }

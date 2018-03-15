@@ -16,10 +16,10 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     const projectsWatcher = new ProjectsWatcher();
 
     if (!isValidBoolean(mtscCfg.preserveWatchOutput)) mtscCfg.preserveWatchOutput = DEBUG_MODE;
+    if (!isValidBoolean(mtscCfg.watch)) mtscCfg.watch = false;
 
     for (let stringOrCfg of mtscCfg.projects) {
         let projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;
-        projectCfg.watch = isValidBoolean(projectCfg.watch) ? projectCfg.watch : !!mtscCfg.watch;
 
         if (!isValidString(projectCfg.compiler)) {
             projectCfg.compiler = isValidString(mtscCfg.compiler)
@@ -30,7 +30,7 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
         if (!isValidBoolean(projectCfg.noEmit)) projectCfg.noEmit = mtscCfg.noEmit;
 
         debugLog(
-            `Adding project:\nPath: ${projectCfg.path}\nwatch: ${!!projectCfg.watch}\nCompiler: ${projectCfg.compiler}`
+            `Adding project:\nPath: ${projectCfg.path}\nwatch: ${!!mtscCfg.watch}\nCompiler: ${projectCfg.compiler}`
         );
 
         const tslintCfg = getTslintSettings(globalTslintCfg, projectCfg.path, projectCfg.tslint);
@@ -38,7 +38,7 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
 
         const projectSettings: ProjectSettings = {
             preserveWatchOutput: mtscCfg.preserveWatchOutput,
-            watch: projectCfg.watch,
+            watch: mtscCfg.watch,
             path: projectCfg.path,
             compiler: projectCfg.compiler,
             noEmit: projectCfg.noEmit,
