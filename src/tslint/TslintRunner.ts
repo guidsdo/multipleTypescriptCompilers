@@ -25,7 +25,7 @@ export class TslintRunner {
     }
 
     startLinting() {
-        debugLog("Starting tslint with options", {
+        debugLog("Tslint: Starting  with options", {
             tslintCfg: this.tslintCfg,
             tsconfig: this.tsconfig,
             autofix: this.autofix
@@ -37,7 +37,7 @@ export class TslintRunner {
 
     terminate() {
         if (this.running) {
-            debugLog("Tslint: Aborting...");
+            debugLog("Tslint: Aborting", this.tsconfig);
         }
         this.terminated = true;
     }
@@ -74,9 +74,10 @@ export class TslintRunner {
             else {
                 this.running = false;
 
-                if (this.terminated) debugLog("Tslint: Aborted.");
+                if (this.terminated) debugLog("Tslint: Aborted", this.tsconfig);
                 else {
                     this.result = linter.getResult().output;
+                    debugLog("Tslint: done and printing for", this.tsconfig);
                     this.doneCb();
                 }
             }

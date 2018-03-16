@@ -38,7 +38,7 @@ export class Project {
         const { compiler, watch, path, noEmit } = this.args;
         const compileCommand = [compiler, watch ? "-w" : "", noEmit === true ? "--noEmit" : "", `-p ${path}`].join(" ");
 
-        debugLog("Executing following command", compileCommand);
+        debugLog("TscL executing following command", compileCommand);
 
         const execOptions = { async: true, silent: true };
 
@@ -46,6 +46,7 @@ export class Project {
 
         child.stdout.on("data", this.parseCommandOutput);
         child.stdout.on("end", () => {
+            debugLog("Tsc: done with compiling for", this.args.path);
             this.setLastResult();
             this.tslintRunner ? this.tslintRunner.startLinting() : this.compiledCb(this);
         });
@@ -56,7 +57,7 @@ export class Project {
         if (this.args.preserveWatchOutput) data = data.replace(DISALLOWED_DEBUG_CHARS, "");
 
         if (data.match(TSC_COMPILATION_COMPLETE)) {
-            debugLog("Compilation was complete, now printing everything");
+            debugLog("Tsc: complete and printing everything for", this.args.path);
             this.setLastResult();
             this.compiledCb(this);
 
@@ -67,12 +68,16 @@ export class Project {
         } else if (data.match(TSC_COMPILATION_STARTED)) {
             // Push empty result for old tsc compatibility
             this.resultBuffer.push("");
+            debugLog("Tsc: starting compilation for", this.args.path);
 
             if (this.tslintRunner) this.tslintRunner.terminate();
             this.compilingCb();
         } else if (data) {
             // Show 'Starting compilation in watch mode...' for old tsc clients
-            if (!this.resultBuffer.length) this.compilingCb();
+            if (!this.resultBuffer.length) {
+                this.compilingCb();
+                debugLog("Tsc: starting compilation for", this.args.path);
+            }
 
             this.resultBuffer.push(data);
         }
