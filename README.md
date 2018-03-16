@@ -25,12 +25,14 @@ This package has a peerdependency on tslint. The tool allows you to not use tsli
 
 ## Options
 ```
-  -d, --debug
-  -c, --config [path_to_config]     Path to mtsc config
-  -w, --watch                       Watch the given projects (default false)
-  -t, --tsc [path_to_tsc]           Path to compiler for all projects (will search in exec dir if not given)
-  -l, --lint [path_to_tslintrules]  Path to tslint rules for all projects (will search if not given)
-  -h, --help                        output usage information
+    -d, --debug                       Add way too much logging
+    -c, --config [path_to_config]     Path to mtsc config
+    -w, --watch                       Watch the given projects (default false)
+    -p, --preserveWatchOutput         Don't throw away watch output (default true in debug mode)
+    --noEmit                          Do not emit outputs
+    -t, --tsc [path_to_tsc]           Path to compiler for all projects (will search in exec dir if not given)
+    -l, --lint [path_to_tslintrules]  Path to tslint rules for all projects (will search if not given)
+    -h, --help                        output usage information
 ```
 
 ## mtsc.json spec
