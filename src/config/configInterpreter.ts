@@ -12,11 +12,11 @@ type GlobalTslint = { autofix: boolean; rulesFile?: string; enabled?: boolean };
 export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     setDebugMode(!!mtscCfg.debug);
 
-    const globalTslintCfg = initGlobalTslintCfg(mtscCfg.tslint);
-    const projectsWatcher = new ProjectsWatcher();
-
     if (!isValidBoolean(mtscCfg.preserveWatchOutput)) mtscCfg.preserveWatchOutput = DEBUG_MODE;
     if (!isValidBoolean(mtscCfg.watch)) mtscCfg.watch = false;
+
+    const globalTslintCfg = initGlobalTslintCfg(mtscCfg.tslint);
+    const projectsWatcher = new ProjectsWatcher(mtscCfg.watch);
 
     for (let stringOrCfg of mtscCfg.projects) {
         let projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;

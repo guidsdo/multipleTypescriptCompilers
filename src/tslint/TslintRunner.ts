@@ -29,6 +29,7 @@ export class TslintRunner {
             tsconfig: this.tsconfig,
             autofix: this.autofix
         });
+
         this.result = "";
         this.running = true;
 
@@ -37,23 +38,30 @@ export class TslintRunner {
         const files = Linter.getFileNames(program);
         const configuration = Configuration.findConfiguration(this.tslintCfg).results;
 
-        for (let i = 0; i < files.length && this.running; i++) {
-            const file = files[i];
+        const lintInEventLoop = (linter: Linter, files: string[]) => {
+            const file = files.shift()!;
             const fileContents = program.getSourceFile(file)!.getFullText();
             linter.lint(file, fileContents, configuration);
-        }
+            if (files.length && this.running) {
+                setImmediate(() => lintInEventLoop(linter, files));
+            } else {
+                if (this.running) {
+                    // Only show results if linting is completely done.
+                    this.running = false;
+                    this.result = linter.getResult().output;
+                } else {
+                    debugLog("Tslint: Aborted.");
+                }
+                this.doneCb();
+            }
+        };
 
-        if (this.running) {
-            // Only show results if linting is completely done.
-            this.running = false;
-            this.result = linter.getResult().output;
-        }
-        this.doneCb();
+        lintInEventLoop(linter, files);
     }
 
     stopLinting() {
         if (this.running) {
-            debugLog("Tslint aborted");
+            debugLog("Tslint: Aborting...");
         }
         this.running = false;
     }

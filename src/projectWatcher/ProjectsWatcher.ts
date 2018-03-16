@@ -8,6 +8,8 @@ export class ProjectsWatcher {
     private lastLog: logType = "IDLE";
     private projects: Project[] = [];
 
+    constructor(private watch: boolean) {}
+
     addProject(projectArgs: ProjectSettings) {
         if (this.findProject(projectArgs.path)) {
             debugLog("Ignored duplicate project", projectArgs.path);
@@ -18,8 +20,7 @@ export class ProjectsWatcher {
         const newProjectCompiler = new Project(
             projectArgs,
             this.projectCompilationStart,
-            this.projectCompilationComplete,
-            this.projectCompilationFinal
+            this.projectCompilationComplete
         );
         this.projects.push(newProjectCompiler);
     }
@@ -28,13 +29,15 @@ export class ProjectsWatcher {
         this.projects.forEach(project => project.startCompiling());
     }
 
-    projectCompilationStart = () => {
+    private projectCompilationStart = () => {
         if (this.lastLog === "IDLE" || this.lastLog === "COMPLETE") {
             this.logStatus("COMPILING");
         }
     };
 
-    projectCompilationComplete = () => {
+    private projectCompilationComplete = (project: Project) => {
+        if (!this.watch) return this.projectCompilationFinal(project);
+
         const result = this.projects
             .map(projectCompiler => {
                 return projectCompiler.getLastResult();
@@ -49,14 +52,14 @@ export class ProjectsWatcher {
         }
     };
 
-    projectCompilationFinal = (project: Project) => {
-        this.projectCompilationComplete();
+    private projectCompilationFinal(project: Project) {
+        console.log(project.getLastResult() + "\n");
         this.projects.splice(this.projects.indexOf(project), 1);
 
         if (!this.projects.length) {
             this.logStatus("IDLE");
         }
-    };
+    }
 
     private findProject(path: string): Project | null {
         return this.projects.find(project => project.equals(path)) || null;
@@ -71,7 +74,10 @@ export class ProjectsWatcher {
     }
 
     private logStatus(type: logType) {
-        let message = "";
+        // If not in watch mode, we don't care about cool logging
+        if (!this.watch) return;
+
+        let message;
         if (type === "COMPILING" && this.lastLog === "IDLE") {
             message = "Starting compilation in watch mode...";
         } else if (type === "COMPILING") {

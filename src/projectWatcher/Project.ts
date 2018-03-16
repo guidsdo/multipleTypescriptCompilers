@@ -21,18 +21,16 @@ export class Project {
     private resultBuffer: string[] | null = [];
     private lastResult = "";
     private compilingCb: () => void;
-    private compiledCb: () => void;
-    private doneCb: (p: Project) => void;
+    private compiledCb: (p: Project) => void;
     private tslintRunner: TslintRunner | null = null;
 
-    constructor(args: ProjectSettings, compilingCb: () => void, compiledCb: () => void, doneCb: (p: Project) => void) {
+    constructor(args: ProjectSettings, compilingCb: () => void, compiledCb: (p: Project) => void) {
         this.args = args;
         this.compilingCb = compilingCb;
         this.compiledCb = compiledCb;
-        this.doneCb = doneCb;
 
         if (this.args.tslint !== undefined) {
-            this.tslintRunner = new TslintRunner(this.args.tslint, this.compiledCb);
+            this.tslintRunner = new TslintRunner(this.args.tslint, this.tsLintDoneCb);
         }
     }
 
@@ -47,33 +45,43 @@ export class Project {
         const child = sh.exec(compileCommand, execOptions) as ChildProcess;
 
         child.stdout.on("data", this.parseCommandOutput);
-        child.stdout.on("end", () => this.doneCb(this));
+        child.stdout.on("end", () => {
+            this.setLastResult();
+            this.tslintRunner ? this.tslintRunner.startLinting() : this.compiledCb(this);
+        });
     }
 
     private parseCommandOutput = (data: string) => {
-        if (!this.resultBuffer) {
-            this.resultBuffer = [];
-        }
-
-        data = this.args.preserveWatchOutput ? data.replace(DISALLOWED_DEBUG_CHARS, "") : data;
+        if (!this.resultBuffer) this.resultBuffer = [];
+        if (this.args.preserveWatchOutput) data = data.replace(DISALLOWED_DEBUG_CHARS, "");
 
         if (data.match(TSC_COMPILATION_COMPLETE)) {
             debugLog("Compilation was complete, now printing everything");
-            this.lastResult = this.resultBuffer.join("\n");
-            this.resultBuffer = null;
-            this.compiledCb();
+            this.setLastResult();
+            this.compiledCb(this);
 
             if (this.tslintRunner) {
                 this.compilingCb();
                 this.tslintRunner.startLinting();
             }
         } else if (data.match(TSC_COMPILATION_STARTED)) {
+            // Push empty result for old tsc compatibility
+            this.resultBuffer.push("");
+
             if (this.tslintRunner) this.tslintRunner.stopLinting();
             this.compilingCb();
-        } else {
+        } else if (data) {
+            // Show 'Starting compilation in watch mode...' for old tsc clients
+            if (!this.resultBuffer.length) this.compilingCb();
+
             this.resultBuffer.push(data);
         }
     };
+
+    setLastResult() {
+        this.lastResult = this.resultBuffer!.join("");
+        this.resultBuffer = null;
+    }
 
     getLastResult() {
         const result = [];
@@ -85,6 +93,10 @@ export class Project {
 
         return result.join("\n");
     }
+
+    tsLintDoneCb = () => {
+        this.compiledCb(this);
+    };
 
     isCompiling() {
         return !!this.resultBuffer || (this.tslintRunner ? this.tslintRunner!.isRunning() : false);
