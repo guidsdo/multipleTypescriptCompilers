@@ -1,5 +1,5 @@
 # Multiple Typescript Compilers <img src="https://github.com/guidojo/multipleTypescriptCompilers/blob/master/images/mtsc_logo_small.png?raw=true" align="right" width="200"/>
-_Monorepo solution for multiple typescript projects (tslint support!). Run multiple typescript compilers concurrently at the same time._
+_Monorepo solution for multiple typescript projects. Watch multiple typescript compilers concurrently at the same time, without losing output!_
 
 ## Usage
 ### Cli:
