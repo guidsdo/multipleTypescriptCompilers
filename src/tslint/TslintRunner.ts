@@ -10,6 +10,7 @@ export type TslintSettings = {
 
 export class TslintRunner {
     private running = false;
+    private terminated = false;
     private result = "";
     private doneCb: () => void;
 
@@ -31,8 +32,34 @@ export class TslintRunner {
         });
 
         this.result = "";
-        this.running = true;
+        this.startLintingWhenNotRunning();
+    }
 
+    terminate() {
+        if (this.running) {
+            debugLog("Tslint: Aborting...");
+        }
+        this.terminated = true;
+    }
+
+    getResult() {
+        return this.result;
+    }
+
+    isRunning() {
+        return this.running;
+    }
+
+    private startLintingWhenNotRunning = () => {
+        // Make sure to wait until tslint is really done before firing a new tslint task
+        if (this.running) setImmediate(this.startLintingWhenNotRunning);
+        else {
+            this.terminated = false;
+            this.lintFilesAsync();
+        }
+    };
+
+    private lintFilesAsync() {
         const program = Linter.createProgram(this.tsconfig);
         const linter = new Linter({ fix: this.autofix, formatter: Formatter }, program);
         const files = Linter.getFileNames(program);
@@ -42,35 +69,20 @@ export class TslintRunner {
             const file = files.shift()!;
             const fileContents = program.getSourceFile(file)!.getFullText();
             linter.lint(file, fileContents, configuration);
-            if (files.length && this.running) {
-                setImmediate(() => lintInEventLoop(linter, files));
-            } else {
-                if (this.running) {
-                    // Only show results if linting is completely done.
-                    this.running = false;
+
+            if (files.length && !this.terminated) setImmediate(lintInEventLoop, linter, files);
+            else {
+                this.running = false;
+
+                if (this.terminated) debugLog("Tslint: Aborted.");
+                else {
                     this.result = linter.getResult().output;
-                } else {
-                    debugLog("Tslint: Aborted.");
+                    this.doneCb();
                 }
-                this.doneCb();
             }
         };
 
+        this.running = true;
         lintInEventLoop(linter, files);
-    }
-
-    stopLinting() {
-        if (this.running) {
-            debugLog("Tslint: Aborting...");
-        }
-        this.running = false;
-    }
-
-    getResult() {
-        return this.result;
-    }
-
-    isRunning() {
-        return this.running;
     }
 }

@@ -68,7 +68,7 @@ export class Project {
             // Push empty result for old tsc compatibility
             this.resultBuffer.push("");
 
-            if (this.tslintRunner) this.tslintRunner.stopLinting();
+            if (this.tslintRunner) this.tslintRunner.terminate();
             this.compilingCb();
         } else if (data) {
             // Show 'Starting compilation in watch mode...' for old tsc clients
