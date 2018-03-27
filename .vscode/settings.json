@@ -1,39 +1,25 @@
 {
-  "editor.tabSize": 4,
-  "editor.insertSpaces": true,
-  "files.trimTrailingWhitespace": true,
-  "files.eol": "\n",
-  "files.insertFinalNewline": true,
-  "git.autofetch": false,
-  "search.exclude": {
-    "node_modules": true
-  },
-  "[typescript]": {
-    "editor.formatOnSave": true
-  },
-  "[typescriptreact]": {
-    "editor.formatOnSave": true
-  },
-  "[css]": {
-    "editor.formatOnSave": true
-  },
-  "[scss]": {
-    "editor.formatOnSave": true
-  },
-  "[javascript]": {
-    "editor.formatOnSave": true
-  },
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "files.trimTrailingWhitespace": true,
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "git.autofetch": false,
+    "search.exclude": {
+        "node_modules": true
+    },
+    "editor.formatOnSave": true,
 
-  // Typescript
-  "typescript.tsdk": "./node_modules/typescript/lib",
-  "typescript.referencesCodeLens.enabled": true,
-  "typescript.implementationsCodeLens.enabled": true,
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
-  "typescript.reportStyleChecksAsWarnings": false,
+    // Typescript
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.referencesCodeLens.enabled": true,
+    "typescript.implementationsCodeLens.enabled": true,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
+    "typescript.reportStyleChecksAsWarnings": false,
 
-  // Plugins
-  "prettier.tabWidth": 4,
-  "prettier.printWidth": 120,
-
-  "csscomb.formatOnSave": true
+    // Plugins
+    "prettier.tabWidth": 4,
+    "prettier.printWidth": 120,
+    "tslint.enable": false,
+    "csscomb.formatOnSave": true
 }
