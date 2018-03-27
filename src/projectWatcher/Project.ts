@@ -48,11 +48,14 @@ export class Project {
         child.stdout.on("end", () => {
             debugLog("Tsc: done with compiling for", this.args.path);
             this.setLastResult();
-            this.tslintRunner ? this.tslintRunner.startLinting() : this.compiledCb(this);
+            if (this.tslintRunner) this.tslintRunner.startLinting();
+            else this.compiledCb(this);
         });
     }
 
-    private parseCommandOutput = (data: string) => {
+    private parseCommandOutput = (_data: string) => {
+        let data = _data;
+
         if (!this.resultBuffer) this.resultBuffer = [];
         if (this.args.preserveWatchOutput) data = data.replace(DISALLOWED_DEBUG_CHARS, "");
 
@@ -104,7 +107,7 @@ export class Project {
     };
 
     isCompiling() {
-        return !!this.resultBuffer || (this.tslintRunner ? this.tslintRunner!.isRunning() : false);
+        return !!this.resultBuffer || (this.tslintRunner ? this.tslintRunner.isRunning() : false);
     }
 
     equals(otherProjectPath: string) {

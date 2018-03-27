@@ -65,12 +65,12 @@ export class TslintRunner {
         const files = Linter.getFileNames(program);
         const configuration = Configuration.findConfiguration(this.tslintCfg).results;
 
-        const lintInEventLoop = (linter: Linter, files: string[]) => {
-            const file = files.shift()!;
+        const lintInEventLoop = (remainingFiles: string[]) => {
+            const file = remainingFiles.shift()!;
             const fileContents = program.getSourceFile(file)!.getFullText();
             linter.lint(file, fileContents, configuration);
 
-            if (files.length && !this.terminated) setImmediate(lintInEventLoop, linter, files);
+            if (remainingFiles.length && !this.terminated) setImmediate(lintInEventLoop, remainingFiles);
             else {
                 this.running = false;
 
@@ -84,6 +84,6 @@ export class TslintRunner {
         };
 
         this.running = true;
-        lintInEventLoop(linter, files);
+        lintInEventLoop(files);
     }
 }

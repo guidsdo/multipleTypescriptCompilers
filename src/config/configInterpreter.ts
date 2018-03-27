@@ -20,8 +20,8 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     const globalTslintCfg = initGlobalTslintCfg(mtscCfg.tslint);
     const projectsWatcher = new ProjectsWatcher(mtscCfg.watch);
 
-    for (let stringOrCfg of mtscCfg.projects) {
-        let projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;
+    for (const stringOrCfg of mtscCfg.projects) {
+        const projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;
 
         if (!isValidString(projectCfg.compiler)) {
             projectCfg.compiler = isValidString(mtscCfg.compiler)

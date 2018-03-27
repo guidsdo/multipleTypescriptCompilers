@@ -3,7 +3,7 @@ import * as node_path from "path";
 import { debugLog } from "./debugTools";
 
 export function findJsonFile(path: string, fallbackFileName: string) {
-    debugLog("Find json file in [path] [fallbackFilename]", path + " " + fallbackFileName);
+    debugLog("Find json file in [path] [fallbackFilename]", `${path} ${fallbackFileName}`);
     canAccessPath(path);
     const pathInfo = node_fs.lstatSync(path);
 
@@ -55,11 +55,13 @@ export function getProjectDir(path: string) {
 
 export function canAccessPath(path: string) {
     debugLog(`Checking if ${path} exists and can be accessed`);
+    // tslint:disable-next-line:no-bitwise
     node_fs.accessSync(path, node_fs.constants.F_OK & node_fs.constants.R_OK);
 }
 
 function canExecutePath(path: string) {
     debugLog(`Checking if ${path} exists and can be executed`);
+    // tslint:disable-next-line:no-bitwise
     node_fs.accessSync(path, node_fs.constants.F_OK & node_fs.constants.X_OK);
 }
 

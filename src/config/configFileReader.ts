@@ -27,6 +27,7 @@ export function findMtscConfig(path?: string): MtscConfig | null {
 export function validateMtscConfig(config: MtscConfig) {
     debugLog("Validating mtsc config...");
 
+    // tslint:disable-next-line:strict-type-predicates
     if (typeof config !== "object") {
         throw new Error("Config isn't an object");
     }

@@ -36,7 +36,10 @@ export class ProjectsWatcher {
     };
 
     private projectCompilationComplete = (project: Project) => {
-        if (!this.watch) return this.projectCompilationFinal(project);
+        if (!this.watch) {
+            this.projectCompilationFinal(project);
+            return;
+        }
 
         const result = this.projects
             .map(projectCompiler => {

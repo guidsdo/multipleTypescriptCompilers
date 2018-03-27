@@ -12,7 +12,7 @@ export function isValidString(variable: any): variable is string {
  * Returns if variable is an array with contents
  * @param variable the to be tested variable
  */
-export function isValidArray(variable: any): variable is Array<any> {
+export function isValidArray(variable: any): variable is any[] {
     return !!variable && isArray(variable) && variable.length > 0;
 }
 

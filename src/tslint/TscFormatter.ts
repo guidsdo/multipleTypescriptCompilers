@@ -3,20 +3,20 @@ import { getRelativePath } from "../index";
 
 // Export as Formatter for Tslint's autofind feature
 export class Formatter extends Formatters.AbstractFormatter {
-    public static alwaysShowRuleFailuresAsWarnings: boolean = false;
+    static alwaysShowRuleFailuresAsWarnings = false;
 
-    public static metadata: IFormatterMetadata = {
+    static metadata: IFormatterMetadata = {
         formatterName: "tsc",
         description: "Lists files containing lint errors.",
         sample: "",
         consumer: "machine"
     };
 
-    public format(failures: RuleFailure[]): string {
+    format(failures: RuleFailure[]): string {
         return failures.map(this.formatFailure).join("\n");
     }
 
-    formatFailure(failure: RuleFailure): string {
+    formatFailure = (failure: RuleFailure) => {
         const fileName = getRelativePath(failure.getFileName());
         const severity = Formatter.alwaysShowRuleFailuresAsWarnings
             ? "warning"
@@ -31,7 +31,7 @@ export class Formatter extends Formatters.AbstractFormatter {
         // and use TS2515 because the plugin uses it..
         // See: https://github.com/angelozerr/tslint-language-service/blob/master/src/index.ts#L17
         return `${fileName}(${lineStart},${charStart}): ${severity} TS2515: ${issue} (${failure.getRuleName()})`;
-    }
+    };
 }
 
 export const TscFormatter = Formatter;
