@@ -12,9 +12,10 @@ commander
     .option("-c, --config [path_to_config]", "Path to mtsc config")
     .option("-w, --watch", "Watch the given projects (default false)")
     .option("-p, --preserveWatchOutput", "Don't throw away watch output (default true in debug mode)")
-    .option("--noEmit", "Do not emit outputs")
     .option("-t, --tsc [path_to_tsc]", "Path to compiler for all projects (will search in exec dir if not given)")
     .option("-l, --lint [path_to_tslintrules]", "Path to tslint rules for all projects (will search if not given)")
+    .option("--noEmit", "Do not emit outputs")
+    .option("--tslintAlwaysShowAsWarning", "Always show tslint output as warning")
     .parse(process.argv);
 
 setDebugMode(!!commander.debug);
@@ -65,6 +66,11 @@ if (commander.lint && isValidString(commander.lint)) {
 if (commander.noEmit) {
     debugLog("Global noEmit set to", commander.noEmit);
     mtscConfig.noEmit = commander.noEmit;
+}
+
+if (commander.tslintAlwaysShowAsWarning) {
+    debugLog("Global tslintAlwaysShowAsWarning set to", commander.tslintAlwaysShowAsWarning);
+    mtscConfig.tslintAlwaysShowAsWarning = commander.tslintAlwaysShowAsWarning;
 }
 
 if (commander.preserveWatchOutput) {

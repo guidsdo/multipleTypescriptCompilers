@@ -5,6 +5,7 @@ import { ProjectsWatcher } from "../projectWatcher/ProjectsWatcher";
 import { ProjectSettings } from "../projectWatcher/Project";
 import { MtscConfig, TslintCfgObject, TslintCfg } from "./configSpec";
 import { TslintSettings } from "../tslint/TslintRunner";
+import { TscFormatter } from "../tslint/TscFormatter";
 
 const TSLINT_CFG = "tslint.json";
 type GlobalTslint = { autofix: boolean; rulesFile?: string; enabled?: boolean };
@@ -12,6 +13,7 @@ type GlobalTslint = { autofix: boolean; rulesFile?: string; enabled?: boolean };
 export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     setDebugMode(!!mtscCfg.debug);
 
+    if (mtscCfg.tslintAlwaysShowAsWarning) TscFormatter.alwaysShowRuleFailuresAsWarnings = true;
     if (!isValidBoolean(mtscCfg.preserveWatchOutput)) mtscCfg.preserveWatchOutput = DEBUG_MODE;
     if (!isValidBoolean(mtscCfg.watch)) mtscCfg.watch = false;
 

@@ -2,7 +2,6 @@ import * as fs from "fs";
 import { debugLog } from "../helpers/debugTools";
 import { canAccessPath } from "../helpers/fileSystemHelpers";
 import { isValidArray, isValidBoolean, isValidObject, isValidString } from "../helpers/typeCheckHelpers";
-import { TscFormatter } from "../tslint/TscFormatter";
 import { MtscConfig, ProjectConfig, TslintCfg } from "./configSpec";
 
 const DEFAULT_CONFIG_NAME = "mtsc.json";
@@ -53,8 +52,10 @@ export function validateMtscConfig(config: MtscConfig) {
     }
 
     if (config.tslint) validateTslintConfig(config.tslint);
-    if (isValidBoolean(config.tslintAlwaysShowAsWarning))
-        TscFormatter.alwaysShowRuleFailuresAsWarnings = config.tslintAlwaysShowAsWarning;
+
+    if (config.tslintAlwaysShowAsWarning && !isValidBoolean(config.tslintAlwaysShowAsWarning)) {
+        throw new Error("TslintAlwaysShowAsWarning isn't a valid boolean");
+    }
 
     if (isValidArray(config.projects)) {
         config.projects.forEach(validateProjectConfig);
