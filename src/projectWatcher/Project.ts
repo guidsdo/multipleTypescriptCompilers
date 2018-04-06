@@ -38,7 +38,7 @@ export class Project {
         const { compiler, watch, path, noEmit } = this.args;
         const compileCommand = [compiler, watch ? "-w" : "", noEmit === true ? "--noEmit" : "", `-p ${path}`].join(" ");
 
-        debugLog("TscL executing following command", compileCommand);
+        debugLog("Tsc: executing following command", compileCommand);
 
         const execOptions = { async: true, silent: true };
 
@@ -94,9 +94,9 @@ export class Project {
     getLastResult() {
         const result = [];
         if (this.lastResult) result.push(this.lastResult);
-        if (this.tslintRunner && !this.tslintRunner.isRunning()) {
-            const tslintResult = this.tslintRunner.getResult();
-            if (tslintResult) result.push(this.tslintRunner.getResult());
+        if (this.tslintRunner) {
+            const tslintResult = this.tslintRunner.getLastResult();
+            if (tslintResult) result.push(this.tslintRunner.getLastResult());
         }
 
         return result.join("\n");

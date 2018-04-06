@@ -42,7 +42,7 @@ export class TslintRunner {
         this.terminated = true;
     }
 
-    getResult() {
+    getLastResult() {
         return this.result;
     }
 
