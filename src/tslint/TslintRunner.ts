@@ -31,7 +31,6 @@ export class TslintRunner {
             autofix: this.autofix
         });
 
-        this.result = "";
         this.startLintingWhenNotRunning();
     }
 

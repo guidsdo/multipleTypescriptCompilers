@@ -96,7 +96,7 @@ export class Project {
         if (this.lastResult) result.push(this.lastResult);
         if (this.tslintRunner) {
             const tslintResult = this.tslintRunner.getLastResult();
-            if (tslintResult) result.push(this.tslintRunner.getLastResult());
+            if (tslintResult) result.push(tslintResult);
         }
 
         return result.join("\n");
