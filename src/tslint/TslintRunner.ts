@@ -21,6 +21,7 @@ export class TslintRunner {
     constructor(tslintArgs: TslintSettings, doneCb: () => void) {
         this.tslintCfg = tslintArgs.rulesFile;
         this.tsconfig = tslintArgs.tsconfigPath;
+        this.autofix = tslintArgs.autoFix;
         this.doneCb = doneCb;
     }
 

@@ -104,6 +104,10 @@ export function validateTslintConfig(tslintConfig: TslintCfg) {
         throw new Error("Tslint: autofix is invalid");
     }
 
+    if (tslintConfig.enabled && !isValidBoolean(tslintConfig.enabled)) {
+        throw new Error("Tslint: enabled is invalid");
+    }
+
     if (tslintConfig.rulesFile && !isValidString(tslintConfig.rulesFile)) {
         throw new Error("Tslint: rules file is invalid");
     }

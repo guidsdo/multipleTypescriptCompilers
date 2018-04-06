@@ -68,7 +68,7 @@ function initGlobalTslintCfg(tslint?: string | boolean | TslintCfgObject): Globa
         }
     } else if (isValidObject(tslint)) {
         result.autofix = isValidBoolean(tslint.autofix) ? tslint.autofix : false;
-        result.enabled = isValidBoolean(tslint.enabled) ? tslint.enabled : undefined;
+        result.enabled = isValidBoolean(tslint.enabled) ? tslint.enabled : true;
         result.rulesFile = isValidString(tslint.rulesFile) ? tslint.rulesFile : undefined;
     }
     debugLog("Done initiating global tslint cfg", result);
