@@ -48,7 +48,7 @@ export function validateMtscConfig(config: MtscConfig) {
         throw new Error("Compiler isn't a string");
     }
 
-    if (config.noEmit && !isValidBoolean(config.compiler)) {
+    if (config.noEmit && !isValidBoolean(config.noEmit)) {
         throw new Error("NoEmit isn't a valid boolean");
     }
 
