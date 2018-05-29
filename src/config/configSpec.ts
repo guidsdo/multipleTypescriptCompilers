@@ -36,8 +36,6 @@ export type MtscConfig = {
     watch?: boolean;
     // Do not emit outputs for all projects. Default: use tsconfigs option
     noEmit?: boolean | undefined;
-    // Don't throw away watch output, official support will be added in tsc 2.8.0 https://github.com/Microsoft/TypeScript/issues/21295
-    preserveWatchOutput?: boolean;
     // Default: false. Options: Enabled | Rulesfile | TslintConfigObject
     tslint?: boolean | string | TslintCfgObject;
     // Same setting as in tslint-language-service (alwaysShowRuleFailuresAsWarnings)

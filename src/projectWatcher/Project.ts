@@ -3,7 +3,6 @@ import * as sh from "shelljs";
 import { debugLog } from "../helpers/debugTools";
 import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
-const DISALLOWED_DEBUG_CHARS = /\u001bc|\x1Bc|\033c/g;
 const TSC_COMPILATION_COMPLETE = /Compilation complete\. Watching for file changes/;
 const TSC_COMPILATION_STARTED = /File change detected. Starting incremental compilation|Starting compilation in watch mode.../;
 
@@ -11,7 +10,6 @@ export type ProjectSettings = {
     watch: boolean;
     path: string;
     compiler: string;
-    preserveWatchOutput: boolean;
     noEmit?: boolean;
     tslint?: TslintSettings;
 };
@@ -36,7 +34,15 @@ export class Project {
 
     startCompiling() {
         const { compiler, watch, path, noEmit } = this.args;
-        const compileCommand = [compiler, watch ? "-w" : "", noEmit === true ? "--noEmit" : "", `-p ${path}`].join(" ");
+        const compileCommand = [
+            compiler,
+            watch ? "-w" : "",
+            "--preserveWatchOutput",
+            noEmit === true ? "--noEmit" : "",
+            `-p ${path}`
+        ]
+            .filter(value => !!value)
+            .join(" ");
 
         debugLog("Tsc: executing following command", compileCommand);
 
@@ -53,11 +59,8 @@ export class Project {
         });
     }
 
-    private parseCommandOutput = (_data: string) => {
-        let data = _data;
-
+    private parseCommandOutput = (data: string) => {
         if (!this.resultBuffer) this.resultBuffer = [];
-        if (this.args.preserveWatchOutput) data = data.replace(DISALLOWED_DEBUG_CHARS, "");
 
         if (data.match(TSC_COMPILATION_COMPLETE)) {
             debugLog("Tsc: complete and printing everything for", this.args.path);

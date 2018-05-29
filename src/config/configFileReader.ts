@@ -40,10 +40,6 @@ export function validateMtscConfig(config: MtscConfig) {
         throw new Error("Watch isn't a boolean");
     }
 
-    if (config.preserveWatchOutput && !isValidBoolean(config.preserveWatchOutput)) {
-        throw new Error("PreserveWatchOutput isn't a boolean");
-    }
-
     if (config.compiler && !isValidString(config.compiler)) {
         throw new Error("Compiler isn't a string");
     }

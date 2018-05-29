@@ -73,11 +73,6 @@ if (commander.tslintAlwaysShowAsWarning) {
     mtscConfig.tslintAlwaysShowAsWarning = commander.tslintAlwaysShowAsWarning;
 }
 
-if (commander.preserveWatchOutput) {
-    debugLog("PreserveWatchOutput set to", commander.preserveWatchOutput);
-    mtscConfig.preserveWatchOutput = commander.preserveWatchOutput;
-}
-
 debugLog("Checking if there are project folders or tsconfigs given", commander.args);
 if (!commander.args.length && !mtscConfig.projects.length) {
     debugLog("No tsconfig arguments given, will use current dir");
