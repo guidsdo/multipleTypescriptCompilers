@@ -1,8 +1,7 @@
 {
     "name": "mtsc",
-    "version": "2.0.0",
-    "description":
-        "Monorepo solution for multiple typescript projects. Watch multiple typescript compilers concurrently at the same time, without losing output!",
+    "version": "2.0.1",
+    "description": "Monorepo solution for multiple typescript projects. Watch multiple typescript compilers concurrently at the same time, without losing output!",
     "main": "lib/index.js",
     "scripts": {
         "prepublish": "yarn build",
@@ -62,10 +61,16 @@
         "mtsc": "./bin/mtsc"
     },
     "jest": {
-        "moduleFileExtensions": ["ts", "tsx", "js"],
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js"
+        ],
         "transform": {
             "^.+\\.(ts|tsx)$": "<rootDir>/jest.preprocessor.js"
         },
-        "testMatch": ["**/__tests__/*.(ts|tsx)"]
+        "testMatch": [
+            "**/__tests__/*.(ts|tsx)"
+        ]
     }
 }
