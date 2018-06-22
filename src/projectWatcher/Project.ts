@@ -3,7 +3,7 @@ import * as sh from "shelljs";
 import { debugLog } from "../helpers/debugTools";
 import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
-const TSC_COMPILATION_COMPLETE = /Compilation complete\. Watching for file changes/;
+const TSC_COMPILATION_COMPLETE = /(?:Compilation complete\.|Found \d+ errors?\.) Watching for file changes/;
 const TSC_COMPILATION_STARTED = /File change detected. Starting incremental compilation|Starting compilation in watch mode.../;
 
 export type ProjectSettings = {
