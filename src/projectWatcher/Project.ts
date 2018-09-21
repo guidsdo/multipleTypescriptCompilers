@@ -5,6 +5,7 @@ import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
 const TSC_COMPILATION_COMPLETE = /(?:Compilation complete\.|Found \d+ errors?\.) Watching for file changes/;
 const TSC_COMPILATION_STARTED = /File change detected. Starting incremental compilation|Starting compilation in watch mode.../;
+export const TSC_ERRORS_FOUND = /^([^\s].*)\((\d+|\d+,\d+|\d+,\d+,\d+,\d+)\):\s+(error)\s+(TS\d+)\s*:\s*(.*)$/gm;
 
 export type ProjectSettings = {
     watch: boolean;

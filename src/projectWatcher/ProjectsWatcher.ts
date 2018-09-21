@@ -1,10 +1,11 @@
 import * as moment from "moment";
 import { debugLog } from "../helpers/debugTools";
-import { Project, ProjectSettings } from "./Project";
+import { Project, ProjectSettings, TSC_ERRORS_FOUND } from "./Project";
 
 type logType = "COMPILING" | "COMPLETE" | "IDLE";
 
 export class ProjectsWatcher {
+    private finalOutput = "";
     private lastLog: logType = "IDLE";
     private projects: Project[] = [];
 
@@ -56,8 +57,10 @@ export class ProjectsWatcher {
     };
 
     private projectCompilationFinal(project: Project) {
-        console.log(project.getLastResult() + "\n");
+        const lastResult = project.getLastResult();
+        console.log(lastResult + "\n");
         this.projects.splice(this.projects.indexOf(project), 1);
+        this.finalOutput += "\n" + lastResult;
 
         if (!this.projects.length) {
             this.logStatus("IDLE");
@@ -77,9 +80,6 @@ export class ProjectsWatcher {
     }
 
     private logStatus(type: logType) {
-        // If not in watch mode, we don't care about cool logging
-        if (!this.watch) return;
-
         let message;
         if (type === "COMPILING" && this.lastLog === "IDLE") {
             message = "Starting compilation in watch mode...";
@@ -88,7 +88,14 @@ export class ProjectsWatcher {
         } else if (type === "COMPLETE") {
             message = "Compilation complete. Watching for file changes.";
         } else {
-            message = "Done compiling all projects.";
+            const foundErrors = this.finalOutput.match(TSC_ERRORS_FOUND);
+            if (foundErrors) {
+                message = `Done compiling all projects with ${foundErrors.length} error(s) (see above).`;
+                console.log(`${this.getTimestamp()} - ${message}`);
+                process.exit(1);
+            }
+
+            message = `Done compiling all projects without errors.`;
         }
         console.log(`${this.getTimestamp()} - ${message}`);
         this.lastLog = type;
