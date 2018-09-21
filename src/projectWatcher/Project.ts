@@ -37,6 +37,7 @@ export class Project {
         const compileCommand = [
             compiler,
             watch ? "-w" : "",
+            "--pretty false",
             "--preserveWatchOutput",
             noEmit === true ? "--noEmit" : "",
             `-p ${path}`
