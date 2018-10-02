@@ -1,4 +1,6 @@
+import * as cluster from "cluster";
 import * as commander from "commander";
+
 import { findMtscConfig, validateMtscConfig } from "../config/configFileReader";
 import { initProjectsWatcher } from "../config/configInterpreter";
 import { MtscConfig } from "../config/configSpec";
@@ -20,67 +22,73 @@ commander
 
 setDebugMode(!!commander.debug);
 
-const foundConfig = findMtscConfig(commander.config);
-const mtscConfig: MtscConfig = foundConfig || { projects: [] };
+function initProjectWatcherFromCli() {
+    const foundConfig = findMtscConfig(commander.config);
+    const mtscConfig: MtscConfig = foundConfig || { projects: [] };
 
-mtscConfig.debug = commander.debug || mtscConfig.debug;
-setDebugMode(!!mtscConfig.debug);
+    mtscConfig.debug = commander.debug || mtscConfig.debug;
+    setDebugMode(!!mtscConfig.debug);
 
-if (foundConfig) validateMtscConfig(foundConfig);
+    if (foundConfig) validateMtscConfig(foundConfig);
 
-debugLog("Checking if config is given or autodetect", commander.config);
-debugLog("Any options given in CLI will overwrite the config");
+    debugLog("Checking if config is given or autodetect", commander.config);
+    debugLog("Any options given in CLI will overwrite the config");
 
-debugLog("Checking if global compiler is given", commander.tsc);
-if (commander.tsc && isValidString(commander.tsc)) {
-    debugLog("Global compiler set to", commander.tsc);
-    mtscConfig.compiler = commander.tsc;
-} else if (commander.tsc && isValidBoolean(commander.tsc)) {
-    debugLog("Compiler command is true, so now searching for tsc executable");
+    debugLog("Checking if global compiler is given", commander.tsc);
+    if (commander.tsc && isValidString(commander.tsc)) {
+        debugLog("Global compiler set to", commander.tsc);
+        mtscConfig.compiler = commander.tsc;
+    } else if (commander.tsc && isValidBoolean(commander.tsc)) {
+        debugLog("Compiler command is true, so now searching for tsc executable");
 
-    mtscConfig.compiler = findNodeModuleExecutable(".", "tsc");
+        mtscConfig.compiler = findNodeModuleExecutable(".", "tsc");
 
-    debugLog("Compiler command set to", mtscConfig.compiler);
-} else if (commander.tsc) {
-    debugLog("Invalid tsc option given", commander.tsc);
-    throw new Error("Invalid tsc option given");
+        debugLog("Compiler command set to", mtscConfig.compiler);
+    } else if (commander.tsc) {
+        debugLog("Invalid tsc option given", commander.tsc);
+        throw new Error("Invalid tsc option given");
+    }
+
+    if (commander.watch) {
+        debugLog("Global watch set to", commander.watch);
+        mtscConfig.watch = commander.watch;
+    }
+
+    debugLog("Checking if global tslint rules is given", commander.lint);
+    if (commander.lint && isValidString(commander.lint)) {
+        debugLog("Global tslint rules set to", commander.lint);
+        mtscConfig.tslint = commander.lint;
+    } else if (commander.lint && isValidBoolean(commander.lint)) {
+        debugLog("Tslint rules is true");
+        mtscConfig.tslint = commander.lint;
+    } else if (commander.lint) {
+        debugLog("Invalid lint option given", commander.lint);
+        throw new Error("Invalid lint option given");
+    }
+
+    if (commander.noEmit) {
+        debugLog("Global noEmit set to", commander.noEmit);
+        mtscConfig.noEmit = commander.noEmit;
+    }
+
+    if (commander.tslintAlwaysShowAsWarning) {
+        debugLog("Global tslintAlwaysShowAsWarning set to", commander.tslintAlwaysShowAsWarning);
+        mtscConfig.tslintAlwaysShowAsWarning = commander.tslintAlwaysShowAsWarning;
+    }
+
+    debugLog("Checking if there are project folders or tsconfigs given", commander.args);
+    if (!commander.args.length && !mtscConfig.projects.length) {
+        debugLog("No tsconfig arguments given, will use current dir");
+        commander.args.push(".");
+    }
+
+    commander.args.forEach(path => {
+        mtscConfig.projects.push({ path });
+    });
+
+    return initProjectsWatcher(mtscConfig);
 }
 
-if (commander.watch) {
-    debugLog("Global watch set to", commander.watch);
-    mtscConfig.watch = commander.watch;
+if (cluster.isMaster) {
+    initProjectWatcherFromCli().startCompilations();
 }
-
-debugLog("Checking if global tslint rules is given", commander.lint);
-if (commander.lint && isValidString(commander.lint)) {
-    debugLog("Global tslint rules set to", commander.lint);
-    mtscConfig.tslint = commander.lint;
-} else if (commander.lint && isValidBoolean(commander.lint)) {
-    debugLog("Tslint rules is true");
-    mtscConfig.tslint = commander.lint;
-} else if (commander.lint) {
-    debugLog("Invalid lint option given", commander.lint);
-    throw new Error("Invalid lint option given");
-}
-
-if (commander.noEmit) {
-    debugLog("Global noEmit set to", commander.noEmit);
-    mtscConfig.noEmit = commander.noEmit;
-}
-
-if (commander.tslintAlwaysShowAsWarning) {
-    debugLog("Global tslintAlwaysShowAsWarning set to", commander.tslintAlwaysShowAsWarning);
-    mtscConfig.tslintAlwaysShowAsWarning = commander.tslintAlwaysShowAsWarning;
-}
-
-debugLog("Checking if there are project folders or tsconfigs given", commander.args);
-if (!commander.args.length && !mtscConfig.projects.length) {
-    debugLog("No tsconfig arguments given, will use current dir");
-    commander.args.push(".");
-}
-
-commander.args.forEach(path => {
-    mtscConfig.projects.push({ path });
-});
-
-initProjectsWatcher(mtscConfig).startCompilations();
