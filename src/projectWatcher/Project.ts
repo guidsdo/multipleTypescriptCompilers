@@ -1,5 +1,6 @@
-import { ChildProcess } from "child_process";
 import * as sh from "shelljs";
+import { ChildProcess } from "child_process";
+
 import { debugLog } from "../helpers/debugTools";
 import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
 
@@ -108,7 +109,7 @@ export class Project {
     }
 
     tsLintDoneCb = () => {
-        this.compiledCb(this);
+        if (!this.resultBuffer) this.compiledCb(this);
     };
 
     isCompiling() {
