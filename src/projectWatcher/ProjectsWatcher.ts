@@ -1,103 +1,94 @@
 import * as moment from "moment";
-import { debugLog } from "../helpers/debugTools";
-import { Project, ProjectSettings, TSC_ERRORS_FOUND } from "./Project";
+import * as cluster from "cluster";
 
-type logType = "COMPILING" | "COMPLETE" | "IDLE";
+import { debugLog } from "../helpers/debugTools";
+import { ProjectSettings, ProjectState, Instruction, StateUpdate } from "./Project";
+
+const COMPILER_STARTUP = "Starting compilation in watch mode...";
+const COMPILER_DONE = "Compilation complete. Watching for file changes.";
+const COMPILER_BUILDING = "File change detected. Starting incremental compilation...";
+
+type WorkerInfo = {
+    projectSettings: ProjectSettings;
+    projectState: StateUpdate;
+};
 
 export class ProjectsWatcher {
-    private finalOutput = "";
-    private lastLog: logType = "IDLE";
-    private projects: Project[] = [];
+    private projectWorkers = new Map<cluster.Worker, WorkerInfo>();
+    private globalState: ProjectState;
 
-    constructor(private watch: boolean) {}
+    constructor() {
+        cluster.addListener("message", this.handleWorkerMessage);
+        this.globalState = "COMPILING";
+        logMessage(COMPILER_STARTUP);
+    }
 
-    addProject(projectArgs: ProjectSettings) {
-        if (this.findProject(projectArgs.path)) {
-            debugLog("Ignored duplicate project", projectArgs.path);
-            return;
-        }
+    addWorker(projectSettings: ProjectSettings) {
+        debugLog("Creating project compiler for", projectSettings.path);
 
-        debugLog("Creating project compiler for", projectArgs.path);
-        const newProjectCompiler = new Project(
-            projectArgs,
-            this.projectCompilationStart,
-            this.projectCompilationComplete
-        );
-        this.projects.push(newProjectCompiler);
+        const workerInfo: WorkerInfo = { projectSettings, projectState: { lastResult: "", projectState: "COMPLETE" } };
+
+        this.projectWorkers.set(cluster.fork({ projectSettings: JSON.stringify(projectSettings) }), workerInfo);
     }
 
     startCompilations() {
-        this.projects.forEach(project => project.startCompiling());
+        const workerInstruction: Instruction = "START";
+        for (const [worker] of this.projectWorkers) {
+            worker.send(workerInstruction);
+        }
     }
 
-    private projectCompilationStart = () => {
-        if (this.lastLog === "IDLE" || this.lastLog === "COMPLETE") {
-            this.logStatus("COMPILING");
-        }
-    };
+    handleWorkerMessage = (worker: cluster.Worker, stateUpdate: StateUpdate) => {
+        debugLog(`Worker ${worker.id} says: `, stateUpdate.projectState);
+        this.projectWorkers.get(worker)!.projectState = stateUpdate;
 
-    private projectCompilationComplete = (project: Project) => {
-        if (!this.watch) {
-            this.projectCompilationFinal(project);
+        debugLog("Global state currently..", this.globalState);
+
+        if (stateUpdate.projectState === "COMPILING") {
+            if (this.globalState !== "COMPILING") logMessage(COMPILER_BUILDING);
+
+            this.globalState = "COMPILING";
+            debugLog("Global state now: COMPILING");
             return;
         }
 
-        const result = this.projects
-            .map(projectCompiler => {
-                return projectCompiler.getLastResult();
-            })
-            .join("\n");
+        if (stateUpdate.projectState === "COMPLETE") {
+            process.stdout.write(this.getLastResults());
 
-        console.log(result);
-        this.logStatus("COMPLETE");
-
-        if (this.isAProjectCompiling()) {
-            this.logStatus("COMPILING");
+            logMessage(COMPILER_DONE);
         }
+
+        const newGlobalState = this.getMostActiveWorkerState();
+        if (newGlobalState === "COMPILING") {
+            logMessage(COMPILER_BUILDING);
+        }
+
+        this.globalState = newGlobalState;
+        debugLog("Global state now: ", newGlobalState);
     };
 
-    private projectCompilationFinal(project: Project) {
-        const lastResult = project.getLastResult();
-        console.log(lastResult + "\n");
-        this.projects.splice(this.projects.indexOf(project), 1);
-        this.finalOutput += "\n" + lastResult;
-
-        if (!this.projects.length) {
-            this.logStatus("IDLE");
+    private getMostActiveWorkerState(): ProjectState {
+        for (const [, workerInfo] of this.projectWorkers) {
+            const workerState = workerInfo.projectState;
+            if (workerState.projectState === "COMPILING") return "COMPILING";
         }
+
+        return "COMPLETE";
     }
 
-    private findProject(path: string): Project | null {
-        return this.projects.find(project => project.equals(path)) || null;
+    private getLastResults() {
+        const results: string[] = [];
+        this.projectWorkers.forEach(
+            ({ projectState }) => projectState.lastResult && results.push(projectState.lastResult)
+        );
+        return results.join("\n");
     }
+}
 
-    private getTimestamp() {
-        return moment().format("HH:mm:ss");
-    }
+function getTimestamp() {
+    return moment().format("HH:mm:ss");
+}
 
-    private isAProjectCompiling() {
-        return this.projects.find(project => project.isCompiling());
-    }
-
-    private logStatus(type: logType) {
-        let message;
-        if (type === "COMPILING" && this.lastLog === "IDLE") {
-            message = "Starting compilation in watch mode...";
-        } else if (type === "COMPILING") {
-            message = "File change detected. Starting incremental compilation...";
-        } else if (type === "COMPLETE") {
-            message = "Compilation complete. Watching for file changes.";
-        } else {
-            const foundErrors = this.finalOutput.match(TSC_ERRORS_FOUND);
-            if (foundErrors) {
-                message = `Done compiling all projects with ${foundErrors.length} error(s) (see above).`;
-                console.log(`${this.getTimestamp()} - ${message}`);
-                process.exit(1);
-            }
-
-            message = `Done compiling all projects without errors.`;
-        }
-        console.log(`${this.getTimestamp()} - ${message}`);
-        this.lastLog = type;
-    }
+function logMessage(message: string) {
+    console.log(`${getTimestamp()} - ${message}`);
 }

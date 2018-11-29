@@ -26,7 +26,7 @@ export class TslintRunner {
     }
 
     startLinting() {
-        debugLog("Tslint: Starting  with options", {
+        debugLog("Tslint: Starting with options", {
             tslintCfg: this.tslintCfg,
             tsconfig: this.tsconfig,
             autofix: this.autofix
@@ -35,10 +35,9 @@ export class TslintRunner {
         this.startLintingWhenNotRunning();
     }
 
-    terminate() {
-        if (this.running) {
-            debugLog("Tslint: Aborting", this.tsconfig);
-        }
+    abort() {
+        if (this.running) debugLog("Tslint: Aborting", this.tsconfig);
+
         this.terminated = true;
     }
 
@@ -52,8 +51,9 @@ export class TslintRunner {
 
     private startLintingWhenNotRunning = () => {
         // Make sure to wait until tslint is really done before firing a new tslint task
-        if (this.running) setImmediate(this.startLintingWhenNotRunning);
-        else {
+        if (this.running) {
+            setImmediate(this.startLintingWhenNotRunning);
+        } else {
             this.terminated = false;
             this.lintFilesAsync();
         }
@@ -70,14 +70,16 @@ export class TslintRunner {
             const fileContents = program.getSourceFile(file)!.getFullText();
             linter.lint(file, fileContents, configuration);
 
-            if (remainingFiles.length && !this.terminated) setImmediate(lintInEventLoop, remainingFiles);
-            else {
+            if (remainingFiles.length && !this.terminated) {
+                setImmediate(lintInEventLoop, remainingFiles);
+            } else {
                 this.running = false;
 
-                if (this.terminated) debugLog("Tslint: Aborted", this.tsconfig);
-                else {
+                if (this.terminated) {
+                    debugLog("Tslint: Aborted", this.tsconfig);
+                } else {
                     this.result = linter.getResult().output;
-                    debugLog("Tslint: done and printing for", this.tsconfig);
+                    debugLog("Tslint: Done", this.tsconfig);
                     this.doneCb();
                 }
             }

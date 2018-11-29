@@ -17,7 +17,7 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     if (!isValidBoolean(mtscCfg.watch)) mtscCfg.watch = false;
 
     const globalTslintCfg = initGlobalTslintCfg(mtscCfg.tslint);
-    const projectsWatcher = new ProjectsWatcher(mtscCfg.watch);
+    const projectsWatcher = new ProjectsWatcher();
 
     for (const stringOrCfg of mtscCfg.projects) {
         const projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;
@@ -44,7 +44,7 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
             noEmit: projectCfg.noEmit,
             tslint: tslintCfg
         };
-        projectsWatcher.addProject(projectSettings);
+        projectsWatcher.addWorker(projectSettings);
     }
 
     return projectsWatcher;
