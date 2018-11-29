@@ -3,7 +3,8 @@
 _Monorepo solution for multiple typescript projects. Watch multiple typescript compilers concurrently at the same time, without losing output!_
 
 ## Usage
-__NOTE: Supported versions: Typescript 2.8+. Use Mtsc 1.* for older versions__
+
+**NOTE: Supported versions: Typescript 2.8+. Use Mtsc 1.\* for older versions**
 
 ### Cli:
 
@@ -69,7 +70,7 @@ export type MtscConfig = {
     // Use MTSC Debug for extensive logging of what is happening
     debug?: boolean;
     // Watch project (default value is false)
-    watch?: boolean;
+    // watch?: boolean; <-- always true for now
     // Do not emit outputs for all projects. Default: use tsconfigs option
     noEmit?: boolean | undefined;
     // Default: false. Options: Enabled | Rulesfile | TslintConfigObject
@@ -163,7 +164,8 @@ export type TslintCfgObject = {
 
 ## Roadmap
 
-*   Nothing yet. Any ideas? Let me know :)
+-   Allow directories to be ignored, because tslint doesn't always pick them up unfortunately.
+-   Any ideas? Let me know :)
 
 ---
 
