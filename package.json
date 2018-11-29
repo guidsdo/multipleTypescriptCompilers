@@ -54,7 +54,7 @@
         "tslint-eslint-rules": "^5.1.0",
         "tslint-language-service": "^0.9.9",
         "tslint-react": "^3.5.1",
-        "typescript": "3.0.3"
+        "typescript": "3.1.6"
     },
     "bin": {
         "mtsc": "./bin/mtsc"
