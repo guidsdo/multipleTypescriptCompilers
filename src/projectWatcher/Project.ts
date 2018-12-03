@@ -63,7 +63,11 @@ export class Project {
     }
 
     private parseCommandOutput = (data: string) => {
-        if (!this.resultBuffer) this.resultBuffer = [];
+        // No result buffer? Then don't forget to report that we have started
+        if (!this.resultBuffer) {
+            this.sendStateUpdate("COMPILING");
+            this.resultBuffer = [];
+        }
 
         if (data.match(TSC_COMPILATION_COMPLETE)) {
             this.flushResultBuffer();
@@ -74,10 +78,10 @@ export class Project {
                 this.tslintRunner.startLinting();
             }
         } else if (data) {
-            if (this.tslintRunner) this.tslintRunner.abort();
-
-            // No result buffer? Then don't forget to report that we have started
-            if (!this.resultBuffer) this.sendStateUpdate("COMPILING");
+            if (this.tslintRunner) {
+                console.log("DIT VERPEST HET: ", JSON.stringify(data));
+                this.tslintRunner.abort();
+            }
 
             // Ignore the start compiling message, the ProjectsWatcher will write this only if needed.
             if (data.match(TSC_COMPILATION_STARTED)) return;
