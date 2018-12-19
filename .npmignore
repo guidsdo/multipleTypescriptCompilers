@@ -17,3 +17,4 @@ tslint.json
 
 # Global ignore
 __tests__
+__mocks__
