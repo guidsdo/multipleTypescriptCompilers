@@ -45,10 +45,10 @@
     },
     "devDependencies": {
         "@types/colors": "^1.2.1",
-        "@types/jest": "22.2.2",
+        "@types/jest": "23.3.10",
         "@types/node": "^6.0.87",
         "@types/shelljs": "^0.7.8",
-        "jest": "22.4.3",
+        "jest": "23.6.0",
         "prettier": "1.14.3",
         "tslint": "^5.11.0",
         "tslint-eslint-rules": "^5.1.0",
