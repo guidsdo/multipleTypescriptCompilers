@@ -11,7 +11,7 @@ export type TslintSettings = {
 export class TslintRunner {
     private running = false;
     private terminated = false;
-    private result = "";
+    private lastResult = "";
     private doneCb: () => void;
 
     private tslintCfg: string;
@@ -32,7 +32,7 @@ export class TslintRunner {
             autofix: this.autofix
         });
 
-        this.startLintingWhenNotRunning();
+        this.startLintingWhenPossible();
     }
 
     abort() {
@@ -42,17 +42,18 @@ export class TslintRunner {
     }
 
     getLastResult() {
-        return this.result;
+        return this.lastResult;
     }
 
     isRunning() {
         return this.running;
     }
 
-    private startLintingWhenNotRunning = () => {
+    private startLintingWhenPossible = () => {
         // Make sure to wait until tslint is really done before firing a new tslint task
         if (this.running) {
-            setImmediate(this.startLintingWhenNotRunning);
+            this.lastResult = "";
+            setImmediate(this.startLintingWhenPossible);
         } else {
             this.terminated = false;
             this.lintFilesAsync();
@@ -78,7 +79,7 @@ export class TslintRunner {
                 if (this.terminated) {
                     debugLog("Tslint: Aborted", this.tsconfig);
                 } else {
-                    this.result = linter.getResult().output;
+                    this.lastResult = linter.getResult().output;
                     debugLog("Tslint: Done", this.tsconfig);
                     this.doneCb();
                 }

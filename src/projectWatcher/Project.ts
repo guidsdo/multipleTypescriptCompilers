@@ -24,7 +24,7 @@ export type ProjectSettings = {
 
 export class Project {
     private projectSettings: ProjectSettings;
-    private resultBuffer: string[] | null = [];
+    private resultBuffer: string[] | null = null;
     private lastResult = "";
     private reportState: (stateUpdate: StateUpdate) => void;
     private tslintRunner: TslintRunner | null = null;
@@ -42,7 +42,7 @@ export class Project {
         if (instruction === "START") this.startCompiling();
     };
 
-    sendStateUpdate(state: ProjectState) {
+    private sendStateUpdate(state: ProjectState) {
         this.reportState({ lastResult: this.lastResult, projectState: state });
     }
 
@@ -53,40 +53,45 @@ export class Project {
         const child = sh.exec(compileCommand, SH_EXECOPTIONS) as ChildProcess;
 
         child.stdout.on("data", this.parseCommandOutput);
-        child.stdout.on("end", () => {
-            this.flushResultBuffer();
-
-            // End only occurs if the proces isn't in watch mode, so linting must be called manually after a compilation
-            if (this.tslintRunner) this.tslintRunner.startLinting();
-            else this.sendStateUpdate("COMPLETE");
-        });
+        child.stdout.on("end", this.processCompilationComplete);
     }
 
     private parseCommandOutput = (data: string) => {
-        // No result buffer? Then don't forget to report that we have started
-        if (!this.resultBuffer) {
-            this.sendStateUpdate("COMPILING");
-            this.resultBuffer = [];
+        if (data.match(TSC_COMPILATION_COMPLETE)) {
+            this.processCompilationComplete();
+            return;
         }
 
-        if (data.match(TSC_COMPILATION_COMPLETE)) {
-            this.flushResultBuffer();
-            this.sendStateUpdate("COMPLETE");
-
-            if (this.tslintRunner) {
-                this.sendStateUpdate("COMPILING");
-                this.tslintRunner.startLinting();
-            }
-        } else if (data) {
-            if (this.tslintRunner) {
-                console.log("DIT VERPEST HET: ", JSON.stringify(data));
+        // No result buffer? Then don't forget to report that we have started
+        if (!this.resultBuffer) {
+            if (this.tslintRunner && this.tslintRunner.isRunning()) {
+                this.sendStateUpdate("COMPLETE");
                 this.tslintRunner.abort();
             }
 
+            this.lastResult = "";
+            this.resultBuffer = [];
+            this.sendStateUpdate("COMPILING");
+        }
+
+        if (data) {
             // Ignore the start compiling message, the ProjectsWatcher will write this only if needed.
             if (data.match(TSC_COMPILATION_STARTED)) return;
 
             this.resultBuffer.push(data);
+        }
+    };
+
+    private processCompilationComplete = () => {
+        // Can't proces a complete compilation if there was no message
+        if (!this.resultBuffer) return;
+
+        this.flushResultBuffer();
+        this.sendStateUpdate("COMPLETE");
+
+        if (this.tslintRunner) {
+            this.sendStateUpdate("COMPILING");
+            this.tslintRunner.startLinting();
         }
     };
 
