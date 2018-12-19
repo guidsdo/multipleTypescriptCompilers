@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/guidojo/multipleTypescriptCompilers.svg?branch=master)](https://travis-ci.org/guidojo/multipleTypescriptCompilers)
+[![npm version](https://badge.fury.io/js/mtsc.svg)](https://badge.fury.io/js/mtsc)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+
 # Multiple Typescript Compilers <img src="https://github.com/guidojo/multipleTypescriptCompilers/blob/master/images/mtsc_logo_small.png?raw=true" align="right" width="200"/>
 
 _Monorepo solution for multiple typescript projects. Watch multiple typescript compilers concurrently at the same time, without losing output!_
