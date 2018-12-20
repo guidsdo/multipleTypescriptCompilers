@@ -128,6 +128,9 @@ export type TslintCfgObject = {
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
             }
         }
     ]
@@ -151,6 +154,9 @@ export type TslintCfgObject = {
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
             }
         }
     ]
