@@ -5,6 +5,7 @@ _Monorepo solution for multiple typescript projects. Watch multiple typescript c
 [![Build Status](https://travis-ci.org/guidojo/multipleTypescriptCompilers.svg?branch=master)](https://travis-ci.org/guidojo/multipleTypescriptCompilers)
 [![Coverage Status](https://coveralls.io/repos/github/guidojo/multipleTypescriptCompilers/badge.svg?branch=master)](https://coveralls.io/github/guidojo/multipleTypescriptCompilers?branch=master)
 [![npm version](https://badge.fury.io/js/mtsc.svg)](https://badge.fury.io/js/mtsc)
+[![dependencies Status](https://david-dm.org/guidojo/multipleTypescriptCompilers/status.svg)](https://david-dm.org/guidojo/multipleTypescriptCompilers)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 ## Usage
