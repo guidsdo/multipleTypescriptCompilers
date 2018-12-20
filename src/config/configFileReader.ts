@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { debugLog } from "../helpers/debugTools";
-import { canAccessPath } from "../helpers/fileSystemHelpers";
+import { canAccessPath, findJsonFile } from "../helpers/fileSystemHelpers";
 import { isValidArray, isValidBoolean, isValidObject, isValidString } from "../helpers/typeCheckHelpers";
 import { MtscConfig, ProjectConfig, TslintCfg } from "./configSpec";
 
@@ -9,13 +9,13 @@ const DEFAULT_CONFIG_NAME = "mtsc.json";
 export function findMtscConfig(path?: string): MtscConfig | null {
     if (isValidString(path)) {
         debugLog("Trying to open mtsc config", path);
-        canAccessPath(path);
-        return JSON.parse(fs.readFileSync(path, "utf8"));
+        const filePath = findJsonFile(path, DEFAULT_CONFIG_NAME);
+        return JSON.parse(fs.readFileSync(filePath, "utf8"));
     }
 
     try {
         debugLog("Trying to find default mtsc config", path);
-        canAccessPath(DEFAULT_CONFIG_NAME);
+        canAccessPath(DEFAULT_CONFIG_NAME, true);
         return JSON.parse(fs.readFileSync(DEFAULT_CONFIG_NAME, "utf8"));
     } catch {
         debugLog("Cannot find", DEFAULT_CONFIG_NAME);
