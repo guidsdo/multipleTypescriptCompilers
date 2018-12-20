@@ -8,7 +8,7 @@
         "build": "rm -rf lib && tsc",
         "test": "jest",
         "test:watch": "jest --watch",
-        "test:travis": "jest --coverage --coverageReporters=text-lcov | coveralls"
+        "test:travis": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
     },
     "repository": {
         "type": "git",
