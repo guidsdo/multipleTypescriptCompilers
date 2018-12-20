@@ -16,6 +16,7 @@
         "noUnusedParameters": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,
+        "strict": true,
         "plugins": [
             {
                 "name": "tslint-language-service",
