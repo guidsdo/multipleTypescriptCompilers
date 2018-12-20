@@ -20,7 +20,7 @@
         "only-arrow-functions": false,
         "prefer-for-of": true,
         "promise-function-async": true,
-        "typedef": [true, "property-declaration", "parameter"],
+        "typedef": [true, "property-declaration"],
         "typedef-whitespace": [
             true,
             {
