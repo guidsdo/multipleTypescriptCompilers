@@ -28,7 +28,7 @@ export class ProjectsWatcher {
 
         const workerInfo: WorkerInfo = { projectSettings, projectState: { lastResult: "", projectState: "COMPLETE" } };
 
-        this.projectWorkers.set(cluster.fork({ projectSettings: JSON.stringify(projectSettings) }), workerInfo);
+        this.projectWorkers.set(cluster.fork(JSON.stringify({ projectSettings: projectSettings })), workerInfo);
     }
 
     startCompilations() {
@@ -38,11 +38,9 @@ export class ProjectsWatcher {
         }
     }
 
-    handleWorkerMessage = (worker: cluster.Worker, stateUpdate: StateUpdate) => {
+    private handleWorkerMessage = (worker: cluster.Worker, stateUpdate: StateUpdate) => {
         debugLog(`Worker ${worker.id} says: `, stateUpdate.projectState);
         this.projectWorkers.get(worker)!.projectState = stateUpdate;
-
-        debugLog("Global state currently..", this.globalState);
 
         if (stateUpdate.projectState === "COMPILING") {
             if (this.globalState !== "COMPILING") logMessage(COMPILER_BUILDING);
@@ -52,19 +50,25 @@ export class ProjectsWatcher {
             return;
         }
 
-        if (stateUpdate.projectState === "COMPLETE") {
-            process.stdout.write(this.getLastResults());
-
-            logMessage(COMPILER_DONE);
-        }
-
-        const newGlobalState = this.getMostActiveWorkerState();
-        if (newGlobalState === "COMPILING") {
+        // ProjectState from here on is [COMPLETE]
+        if (this.globalState !== "COMPILING") {
+            // We didn't know that we were apparently [COMPILING]? Let's pretend we did :)
             logMessage(COMPILER_BUILDING);
+            this.globalState = "COMPILING";
+            debugLog("Global state now: COMPILING");
         }
 
-        this.globalState = newGlobalState;
-        debugLog("Global state now: ", newGlobalState);
+        process.stdout.write(this.getLastResults());
+        logMessage(COMPILER_DONE);
+        this.globalState = "COMPLETE";
+
+        if (this.getMostActiveWorkerState() === "COMPILING") {
+            // Some project is still [COMPILING]?
+            logMessage(COMPILER_BUILDING);
+            this.globalState = "COMPILING";
+        }
+
+        debugLog("Global state now: ", this.globalState);
     };
 
     private getMostActiveWorkerState(): ProjectState {
@@ -90,5 +94,5 @@ function getTimestamp() {
 }
 
 function logMessage(message: string) {
-    console.log(`${getTimestamp()} - ${message}`);
+    process.stdout.write(`${getTimestamp()} - ${message}\n`);
 }
