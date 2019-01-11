@@ -30,10 +30,10 @@ export class ClusterMockManager {
         this.eventListeners[event].push(listener);
     }
 
-    fork(args: string) {
-        const parsedInput: { projectSettings: ProjectSettings } = JSON.parse(args);
+    fork(args: any) {
+        const parsedInput: ProjectSettings = JSON.parse(args.projectSettings);
 
-        const worker = new WorkerMock(parsedInput.projectSettings, this.passWorkerMessageToListeners);
+        const worker = new WorkerMock(parsedInput, this.passWorkerMessageToListeners);
         this.createdForks.set(this.createdForks.size, worker);
         return worker;
     }

@@ -28,7 +28,7 @@ export class ProjectsWatcher {
 
         const workerInfo: WorkerInfo = { projectSettings, projectState: { lastResult: "", projectState: "COMPLETE" } };
 
-        this.projectWorkers.set(cluster.fork(JSON.stringify({ projectSettings: projectSettings })), workerInfo);
+        this.projectWorkers.set(cluster.fork({ projectSettings: JSON.stringify(projectSettings) }), workerInfo);
     }
 
     startCompilations() {
