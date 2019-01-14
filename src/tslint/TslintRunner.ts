@@ -42,7 +42,7 @@ export class TslintRunner {
     }
 
     getLastResult() {
-        return this.lastResult;
+        return this.lastResult ? `${this.lastResult}\n` : "";
     }
 
     isRunning() {
