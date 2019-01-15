@@ -8,7 +8,16 @@
     "search.exclude": {
         "node_modules": true
     },
-    "editor.formatOnSave": true,
+
+    "[typescript]": {
+        "editor.formatOnSave": true
+    },
+    "[javascript]": {
+        "editor.formatOnSave": true
+    },
+    "[jsonc]": {
+        "editor.formatOnSave": true
+    },
 
     // Typescript
     "typescript.tsdk": "./node_modules/typescript/lib",

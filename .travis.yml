@@ -1,11 +1,13 @@
 language: node_js
+
 node_js:
-    - 8
+  - 8
 
 install:
-    - yarn install
+  - yarn install
 
 script:
-    - yarn test:travis
+  - yarn test:travis
+
 after_success:
-    - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
+  - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
