@@ -28,42 +28,23 @@ export function validateMtscConfig(config: MtscConfig) {
     debugLog("Validating mtsc config...");
 
     // tslint:disable-next-line:strict-type-predicates
-    if (typeof config !== "object") {
-        throw new Error("Config isn't an object");
-    }
+    if (typeof config !== "object") throw new Error("Config isn't an object");
 
-    if (config.debug && !isValidBoolean(config.debug)) {
-        throw new Error("Debug isn't a boolean");
-    }
-
-    if (config.watch && !isValidBoolean(config.watch)) {
-        throw new Error("Watch isn't a boolean");
-    }
-
-    if (config.compiler && !isValidString(config.compiler)) {
-        throw new Error("Compiler isn't a string");
-    }
-
-    if (config.noEmit && !isValidBoolean(config.noEmit)) {
-        throw new Error("NoEmit isn't a valid boolean");
-    }
+    assertTypeIfDefined("Config.Debug", config.debug, isValidBoolean);
+    assertTypeIfDefined("Config.watch", config.watch, isValidBoolean);
+    assertTypeIfDefined("Config.noEmit", config.noEmit, isValidBoolean);
+    assertTypeIfDefined("Config.compiler", config.compiler, isValidString);
+    assertTypeIfDefined("Config.tslintAlwaysShowAsWarning", config.tslintAlwaysShowAsWarning, isValidBoolean);
 
     if (config.tslint) validateTslintConfig(config.tslint);
 
-    if (config.tslintAlwaysShowAsWarning && !isValidBoolean(config.tslintAlwaysShowAsWarning)) {
-        throw new Error("TslintAlwaysShowAsWarning isn't a valid boolean");
-    }
-
-    if (isValidArray(config.projects)) {
-        config.projects.forEach(validateProjectConfig);
-    } else {
-        throw new Error("Projects isn't an array");
-    }
+    assertType("Config.projects", config.projects, isValidArray);
+    config.projects.forEach(validateProjectConfig);
 
     debugLog("Mtsc config is valid!");
 }
 
-function validateProjectConfig(projectConfig: ProjectConfig) {
+export function validateProjectConfig(projectConfig: ProjectConfig) {
     if (isValidString(projectConfig)) {
         return;
     }
@@ -72,17 +53,9 @@ function validateProjectConfig(projectConfig: ProjectConfig) {
         throw new Error("Project config is neither a valid object or a string");
     }
 
-    if (!isValidString(projectConfig.path)) {
-        throw new Error("Path is invalid");
-    }
-
-    if (projectConfig.compiler && !isValidString(projectConfig.compiler)) {
-        throw new Error("Project compiler is invalid");
-    }
-
-    if (projectConfig.noEmit && !isValidBoolean(projectConfig.compiler)) {
-        throw new Error("NoEmit isn't a valid boolean");
-    }
+    assertType("ProjectConfig.path", projectConfig.path, isValidString);
+    assertTypeIfDefined("ProjectConfig.compiler", projectConfig.compiler, isValidString);
+    assertTypeIfDefined("ProjectConfig.noEmit", projectConfig.noEmit, isValidBoolean);
 
     if (projectConfig.tslint) validateTslintConfig(projectConfig.tslint);
 }
@@ -96,19 +69,24 @@ export function validateTslintConfig(tslintConfig: TslintCfg) {
         throw new Error("Tslint config is neither a valid object, boolean or a string");
     }
 
-    if (tslintConfig.autofix && !isValidBoolean(tslintConfig.autofix)) {
-        throw new Error("Tslint: autofix is invalid");
-    }
+    assertTypeIfDefined("Tslint.autofix", tslintConfig.autofix, isValidBoolean);
+    assertTypeIfDefined("Tslint.enabled", tslintConfig.enabled, isValidBoolean);
+    assertTypeIfDefined("Tslint.rulesFile", tslintConfig.rulesFile, isValidString);
+    assertTypeIfDefined("Tslint.tsconfig", tslintConfig.tsconfig, isValidString);
+}
 
-    if (tslintConfig.enabled && !isValidBoolean(tslintConfig.enabled)) {
-        throw new Error("Tslint: enabled is invalid");
+function assertTypeIfDefined<T>(description: string, value: T, match: (value: T) => boolean) {
+    if (value !== undefined && value !== null && !match(value)) {
+        const matchType = match.name.substr("isValid".length);
+        throw new Error(`${description} isn't a valid ${matchType}. The given value is: ${value}`);
     }
+    return true;
+}
 
-    if (tslintConfig.rulesFile && !isValidString(tslintConfig.rulesFile)) {
-        throw new Error("Tslint: rules file is invalid");
+function assertType<T>(description: string, value: T, match: (value: T) => boolean) {
+    if (!match(value)) {
+        const matchType = match.name.substr("isValid".length);
+        throw new Error(`${description} isn't a valid ${matchType}. The given value is: ${value}`);
     }
-
-    if (tslintConfig.tsconfig && !isValidString(tslintConfig.tsconfig)) {
-        throw new Error("Tslint: tsconfig is invalid");
-    }
+    return true;
 }
