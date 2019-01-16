@@ -28,9 +28,9 @@ export class Formatter extends Formatters.AbstractFormatter {
 
         // Format it as TSC..
         // https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher
-        // and use TS2515 because the plugin uses it..
-        // See: https://github.com/angelozerr/tslint-language-service/blob/master/src/index.ts#L17
-        return `${fileName}(${lineStart},${charStart}): ${severity} TS2515: ${issue} (${failure.getRuleName()})`;
+        // and use TS1 because the plugin uses it..
+        // See: https://github.com/Microsoft/typescript-tslint-plugin/blob/master/src/config.ts#L2
+        return `${fileName}(${lineStart},${charStart}): ${severity} TS1: ${issue} (${failure.getRuleName()})`;
     };
 }
 
