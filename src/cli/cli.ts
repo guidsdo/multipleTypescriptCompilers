@@ -1,6 +1,9 @@
 import * as cluster from "cluster";
 import * as commander from "commander";
 
+// Touch all the files from the main index, otherwise workers can't access all the necessary file
+import "..";
+
 import { findMtscConfig, validateMtscConfig } from "../config/configFileReader";
 import { initProjectsWatcher } from "../config/configInterpreter";
 import { MtscConfig } from "../config/configSpec";

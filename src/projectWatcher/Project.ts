@@ -3,6 +3,7 @@ import { ChildProcess } from "child_process";
 
 import { debugLog } from "../helpers/debugTools";
 import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
+import { TscFormatter } from "../tslint/TscFormatter";
 
 const SH_EXECOPTIONS: sh.ExecOptions = { async: true, silent: true };
 const TSC_COMPILATION_COMPLETE = /(?:Compilation complete\.|Found \d+ errors?\.) Watching for file changes/;
@@ -20,6 +21,7 @@ export type ProjectSettings = {
     compiler: string;
     noEmit?: boolean;
     tslint?: TslintSettings;
+    tslintAlwaysShowAsWarning?: boolean;
 };
 
 export class Project {
@@ -34,6 +36,7 @@ export class Project {
         this.reportState = reportState;
 
         if (this.projectSettings.tslint !== undefined) {
+            TscFormatter.alwaysShowRuleFailuresAsWarnings = !!args.tslintAlwaysShowAsWarning;
             this.tslintRunner = new TslintRunner(this.projectSettings.tslint, this.tsLintDoneCb);
         }
     }

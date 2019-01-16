@@ -1,5 +1,5 @@
 import { IFormatterMetadata, Formatters, RuleFailure } from "tslint";
-import { getRelativePath } from "../index";
+import { getRelativePath } from "../helpers";
 
 // Export as Formatter for Tslint's autofind feature
 export class Formatter extends Formatters.AbstractFormatter {
