@@ -63,9 +63,9 @@ This package has a peerdependency on tslint. The tool allows you to not use tsli
 
 
 ## Vscode integration
-Set the typescript compiler in vscode by clicking on the compiler version. This is only possible when you open a typescript file. This setting sometimes goes to the builtin vscode compiler, so if you don't see errors; check this first.
-<img src="https://github.com/guidojo/multipleTypescriptCompilers/blob/master/images/ts_switcher.png?raw=true" align="left"/>
-
+Set the typescript compiler in vscode by clicking on the compiler version. This is only possible when you open a typescript file. This setting sometimes goes to the builtin vscode compiler, so if you don't see errors; check this first.  
+<img src="https://github.com/guidojo/multipleTypescriptCompilers/blob/master/images/ts_switcher.png?raw=true"/>  
+  
 ## Tslint support
 Install the right plugin and follow the README: https://github.com/Microsoft/typescript-tslint-plugin
 

@@ -18,6 +18,9 @@
     "[jsonc]": {
         "editor.formatOnSave": true
     },
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    },
 
     // Typescript
     "typescript.tsdk": "./node_modules/typescript/lib",
