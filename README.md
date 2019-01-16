@@ -59,61 +59,17 @@ This package has a peerdependency on tslint. The tool allows you to not use tsli
 
 ## mtsc.json spec
 
-[Spec copied from here](https://github.com/guidojo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
+[Config spec can be seen here](https://github.com/guidojo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
 
-```typescript
-export type ProjectConfig =
-    | string // Project path (doesn't have to be path/tsconfig.json but is recommended)
-    | {
-          // Project path (doesn't have to be path/tsconfig.json but is recommended)
-          path: string;
-          // Do not emit outputs. Default: use tsconfigs option.
-          noEmit?: boolean | undefined;
-          tslint?: TslintCfg;
-          // Path to the executable tsc
-          compiler?: string;
-      };
 
-// Specific settings win from global settings. Global settings can be seen as default settings for each project.
-export type MtscConfig = {
-    // Use MTSC Debug for extensive logging of what is happening
-    debug?: boolean;
-    // Watch project (default value is false)
-    // watch?: boolean; <-- always true for now
-    // Do not emit outputs for all projects. Default: use tsconfigs option
-    noEmit?: boolean | undefined;
-    // Default: false. Options: Enabled | Rulesfile | TslintConfigObject
-    tslint?: boolean | string | TslintCfgObject;
-    // Same setting as in tslint-language-service (alwaysShowRuleFailuresAsWarnings)
-    tslintAlwaysShowAsWarning?: boolean;
-    // Default: Path to the executable tsc
-    compiler?: string;
-    projects: ProjectConfig[];
-};
-```
+## Vscode integration
+Set the typescript compiler in vscode by clicking on the compiler version. This is only possible when you open a typescript file. This setting sometimes goes to the builtin vscode compiler, so if you don't see errors; check this first.
+<img src="https://github.com/guidojo/multipleTypescriptCompilers/blob/master/images/ts_switcher.png?raw=true" align="left"/>
 
-### For tslint support, see this guide: https://github.com/angelozerr/tslint-language-service
+## Tslint support
+Install the right plugin and follow the README: https://github.com/Microsoft/typescript-tslint-plugin
 
-NOTE: Don't forget to set the typescript compiler in vscode (it's in the guide).
-
-```typescript
-export type TslintCfg =
-    | boolean // Enable tslint? Will search in project specific folder or global tslint file (will search to tslint.json if not provided)
-    | string // Rules file
-    | TslintCfgObject & {
-          // Will search in project specific folder or else in root dir to tsconfig.json if not provided. NOTE: Must be a file name (not a full path).
-          tsconfig?: string;
-      };
-
-export type TslintCfgObject = {
-    // Default value is true
-    enabled?: boolean;
-    // Default value is false
-    autofix?: boolean;
-    // Will search in project specific folder or else in root dir to tslint.json if not provided. NOTE: Must be a file name (not a full path).
-    rulesFile?: string;
-};
-```
+[Tslint section of config spec here](https://github.com/guidojo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
 
 ## Vscode tasks json examples
 
