@@ -6,8 +6,9 @@ node_js:
 install:
   - yarn install
 
-script:
-  - yarn test:travis
-
-after_success:
-  - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
+jobs:
+  include:
+    - stage: Unit Tests + Coverage
+      script: yarn test:coverage
+    - stage: Dependency Audit
+      script: yarn audit
