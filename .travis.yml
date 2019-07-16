@@ -11,4 +11,4 @@ jobs:
     - stage: Unit Tests + Coverage
       script: yarn test:coverage
     - stage: Dependency Audit
-      script: yarn audit
+      script: yarn test:audit

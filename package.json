@@ -9,7 +9,7 @@
         "test": "jest",
         "test:watch": "jest --watch --coverage",
         "test:coverage": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-        "audit": "snyk test"
+        "test:audit": "snyk test"
     },
     "repository": {
         "type": "git",
