@@ -5,6 +5,7 @@ import { ProjectsWatcher } from "../projectWatcher/ProjectsWatcher";
 import { ProjectSettings } from "../projectWatcher/Project";
 import { MtscConfig, TslintCfgObject, TslintCfg } from "./configSpec";
 import { TslintSettings } from "../tslint/TslintRunner";
+import { getYarnWorkspaces } from "../helpers/yarnHelpers";
 
 const TSLINT_CFG = "tslint.json";
 type GlobalTslint = { autofix: boolean; rulesFile?: string; enabled?: boolean };
@@ -18,9 +19,15 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     const globalTslintCfg = initGlobalTslintCfg(mtscCfg.tslint);
     const projectsWatcher = new ProjectsWatcher();
 
-    for (const stringOrCfg of mtscCfg.projects) {
-        const projectCfg = isValidString(stringOrCfg) ? { path: stringOrCfg } : stringOrCfg;
+    if (mtscCfg.useYarnWorkspaces) getYarnWorkspaces().forEach(workspace => mtscCfg.projects.push(workspace));
 
+    const normalisedProjects = mtscCfg.projects.map(project => (isValidString(project) ? { path: project } : project));
+    const uniqueProjects = normalisedProjects.reduce(
+        (projects, project) => (projects.find(p => p.path === project.path) ? projects : [...projects, project]),
+        new Array() as typeof normalisedProjects
+    );
+
+    for (const projectCfg of uniqueProjects) {
         if (!isValidString(projectCfg.compiler)) {
             projectCfg.compiler = isValidString(mtscCfg.compiler)
                 ? mtscCfg.compiler

@@ -80,7 +80,7 @@ function initProjectWatcherFromCli() {
     }
 
     debugLog("Checking if there are project folders or tsconfigs given", commander.args);
-    if (!commander.args.length && !mtscConfig.projects.length) {
+    if (!commander.args.length && !mtscConfig.projects.length && !mtscConfig.useYarnWorkspaces) {
         debugLog("No tsconfig arguments given, will use current dir");
         commander.args.push(".");
     }

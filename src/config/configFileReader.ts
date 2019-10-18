@@ -38,7 +38,15 @@ export function validateMtscConfig(config: MtscConfig) {
 
     if (config.tslint) validateTslintConfig(config.tslint);
 
-    assertType("Config.projects", config.projects, isValidArray);
+    const yarnWorkspaces = assertTypeIfDefined("Config.useYarnWorkspaces", config.useYarnWorkspaces, isValidBoolean);
+
+    if (yarnWorkspaces) {
+        assertTypeIfDefined("Config.projects", config.projects, isValidArray);
+        config.projects = config.projects || [];
+    } else {
+        assertType("Config.projects", config.projects, isValidArray);
+    }
+
     config.projects.forEach(validateProjectConfig);
 
     debugLog("Mtsc config is valid!");

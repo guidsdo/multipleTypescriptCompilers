@@ -43,4 +43,6 @@ export type MtscConfig = {
     // Default: Path to the executable tsc
     compiler?: string;
     projects: ProjectConfig[];
+    // Use yarn workspace directories for projects. You won't be able to have specific project settings this way
+    useYarnWorkspaces?: boolean;
 };
