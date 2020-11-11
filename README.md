@@ -1,4 +1,4 @@
-# Multiple Typescript Compilers <img src="https://github.com/guidojo/multipleTypescriptCompilers/blob/master/images/mtsc_logo_small.png?raw=true" align="right" width="200"/>
+# Multiple Typescript Compilers <img src="https://github.com/guidsdo/multipleTypescriptCompilers/blob/master/images/mtsc_logo_small.png?raw=true" align="right" width="200"/>
 
 _Monorepo solution for multiple typescript projects. Watch multiple typescript compilers concurrently at the same time, without losing output!_
 
@@ -59,17 +59,17 @@ This package has a peerdependency on tslint. The tool allows you to not use tsli
 
 ## mtsc.json spec
 
-[Config spec can be seen here](https://github.com/guidojo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
+[Config spec can be seen here](https://github.com/guidsdo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
 
 
 ## Vscode integration
 Set the typescript compiler in vscode by clicking on the compiler version. This is only possible when you open a typescript file. This setting sometimes goes to the builtin vscode compiler, so if you don't see errors; check this first.  
-<img src="https://github.com/guidojo/multipleTypescriptCompilers/blob/master/images/ts_switcher.png?raw=true"/>  
+<img src="https://github.com/guidsdo/multipleTypescriptCompilers/blob/master/images/ts_switcher.png?raw=true"/>  
   
 ## Tslint support
 Install the right plugin and follow the README: https://github.com/Microsoft/typescript-tslint-plugin
 
-[Tslint section of config spec here](https://github.com/guidojo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
+[Tslint section of config spec here](https://github.com/guidsdo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
 
 ## Vscode tasks json examples
 

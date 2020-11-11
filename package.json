@@ -13,7 +13,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/guidojo/multipleTypescriptCompilers.git"
+        "url": "git+https://github.com/guidsdo/multipleTypescriptCompilers.git"
     },
     "keywords": [
         "mono",
@@ -30,34 +30,34 @@
         "tsc",
         "tslint"
     ],
-    "author": "guidojo",
+    "author": "guidsdo",
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/guidojo/multipleTypescriptCompilers/issues"
+        "url": "https://github.com/guidsdo/multipleTypescriptCompilers/issues"
     },
-    "homepage": "https://github.com/guidojo/multipleTypescriptCompilers#readme",
+    "homepage": "https://github.com/guidsdo/multipleTypescriptCompilers#readme",
     "dependencies": {
         "colors": "^1.4.0",
-        "commander": "^3.0.2",
-        "moment": "^2.24.0",
-        "shelljs": "^0.8.3"
+        "commander": "^6.2.0",
+        "moment": "^2.29.1",
+        "shelljs": "^0.8.4"
     },
     "peerDependencies": {
         "tslint": "^5.0.0"
     },
     "devDependencies": {
         "@types/colors": "^1.2.1",
-        "@types/jest": "^24.0.19",
+        "@types/jest": "^26.0.15",
         "@types/node": "^10.0.0",
-        "@types/shelljs": "^0.8.5",
-        "coveralls": "^3.0.7",
-        "jest": "^24.9.0",
-        "prettier": "^1.18.2",
-        "snyk": "^1.235.1",
-        "ts-jest": "^24.1.0",
-        "tslint": "^5.20.0",
-        "typescript": "^3.6.4",
-        "typescript-tslint-plugin": "^0.5.4"
+        "@types/shelljs": "^0.8.8",
+        "coveralls": "^3.1.0",
+        "jest": "^26.6.3",
+        "prettier": "^2.1.2",
+        "snyk": "^1.425.3",
+        "ts-jest": "^26.4.4",
+        "tslint": "^6.1.3",
+        "typescript": "^4.0.5",
+        "typescript-tslint-plugin": "^0.5.5"
     },
     "bin": {
         "mtsc": "./bin/mtsc"
