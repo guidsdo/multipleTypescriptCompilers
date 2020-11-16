@@ -11,6 +11,25 @@ _Monorepo solution for multiple typescript projects. Watch multiple typescript c
 [![download](https://img.shields.io/npm/dw/mtsc.svg?colorB=cb3837)](https://www.npmjs.com/package/mtsc)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
+## Update 18-november-2020
+Currently this library is in the process of removing tslint support. For some reasons, tslint is deprecated and this means that you will have to move to eslint for linting. I haven't found a good upgrade path for mono-repositories yet. When one is found, I'll update Mtsc with it. The whole goal of Mtsc is to integrate into vscode (since it has terrible multi-project support). Vscode team 'fixed' this partly with workspaces, but in practise this isn't a full fix and it also makes your dev environment feels like a complete mess.
+
+The vision and goal for Mtsc is, and always has been, the following:
+- Be able to lint and ts-compile multiple projects, concurrently whilst keeping all the results (not possible with just `concurrently`)
+- Facilitate proper vscode integration which means:
+    - See lint and tsc result without having to open a specific file
+    - Require the least amount of necessary configurability
+- Support mono-repo's natively
+- Support the following workflow:
+    1. Clone a project
+    1. `yarn`
+    1. `code .`
+    1. `cmd+shift+b`
+    1. See what's happening in your whole monorepo and be able to work at the same time (watchmode). :mindblown:
+
+To be honest, I'm not optimistic because it seems that I will have to do a lot of work to make this work for ts-eslint (which itself already feels like a hack). But hey, on the other hand; I love diving in this kind of stuff.  
+**For now, please use the latest version with the `-no-tslint` tag.**
+
 ## Usage
 
 **NOTE: Supported versions: Typescript 2.8+. Use Mtsc 1.\* for older versions**
