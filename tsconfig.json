@@ -16,14 +16,7 @@
         "noUnusedParameters": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,
-        "strict": true,
-        "plugins": [
-            {
-                "name": "typescript-tslint-plugin",
-                "configFile": "./tslint.json",
-                "alwaysShowRuleFailuresAsWarnings": true
-            }
-        ]
+        "strict": true
     },
     "include": ["src"],
     "exclude": ["node_modules"]

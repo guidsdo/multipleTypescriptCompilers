@@ -4,7 +4,7 @@
         {
             "type": "shell",
             "label": "Mtsc",
-            "command": "./bin/mtsc -w -l --tslintAlwaysShowAsWarning -p .",
+            "command": "./bin/mtsc -w -p .",
             "isBackground": true,
             "problemMatcher": "$tsc-watch",
             "group": {

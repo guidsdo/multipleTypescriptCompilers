@@ -13,7 +13,6 @@ package-lock.json
 // package.json
 // README.md
 tsconfig.json
-tslint.json
 
 # Global ignore
 __tests__

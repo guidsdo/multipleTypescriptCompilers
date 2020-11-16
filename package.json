@@ -27,8 +27,7 @@
         "concurrent",
         "vscode",
         "tasks",
-        "tsc",
-        "tslint"
+        "tsc"
     ],
     "author": "guidsdo",
     "license": "Apache-2.0",
@@ -42,9 +41,6 @@
         "moment": "^2.29.1",
         "shelljs": "^0.8.4"
     },
-    "peerDependencies": {
-        "tslint": "^5.0.0"
-    },
     "devDependencies": {
         "@types/colors": "^1.2.1",
         "@types/jest": "^26.0.15",
@@ -55,9 +51,7 @@
         "prettier": "^2.1.2",
         "snyk": "^1.425.3",
         "ts-jest": "^26.4.4",
-        "tslint": "^6.1.3",
-        "typescript": "^4.0.5",
-        "typescript-tslint-plugin": "^0.5.5"
+        "typescript": "^4.0.5"
     },
     "bin": {
         "mtsc": "./bin/mtsc"
