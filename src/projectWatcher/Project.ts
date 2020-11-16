@@ -2,8 +2,6 @@ import * as sh from "shelljs";
 import { ChildProcess } from "child_process";
 
 import { debugLog } from "../helpers/debugTools";
-import { TslintSettings, TslintRunner } from "../tslint/TslintRunner";
-import { TscFormatter } from "../tslint/TscFormatter";
 
 const SH_EXECOPTIONS: sh.ExecOptions = { async: true, silent: true };
 const TSC_COMPILATION_COMPLETE = /(?:Compilation complete\.|Found \d+ errors?\.) Watching for file changes/;
@@ -20,8 +18,6 @@ export type ProjectSettings = {
     path: string;
     compiler: string;
     noEmit?: boolean;
-    tslint?: TslintSettings;
-    tslintAlwaysShowAsWarning?: boolean;
 };
 
 export class Project {
@@ -29,16 +25,10 @@ export class Project {
     private resultBuffer: string[] | null = null;
     private lastResult = "";
     private reportState: (stateUpdate: StateUpdate) => void;
-    private tslintRunner: TslintRunner | null = null;
 
     constructor(args: ProjectSettings, reportState: (stateUpdate: StateUpdate) => void) {
         this.projectSettings = args;
         this.reportState = reportState;
-
-        if (this.projectSettings.tslint !== undefined) {
-            TscFormatter.alwaysShowRuleFailuresAsWarnings = !!args.tslintAlwaysShowAsWarning;
-            this.tslintRunner = new TslintRunner(this.projectSettings.tslint, this.tsLintDoneCb);
-        }
     }
 
     processInstruction = (instruction: Instruction) => {
@@ -67,11 +57,6 @@ export class Project {
 
         // No result buffer? Then don't forget to report that we have started
         if (!this.resultBuffer) {
-            if (this.tslintRunner && this.tslintRunner.isRunning()) {
-                this.sendStateUpdate("COMPLETE");
-                this.tslintRunner.abort();
-            }
-
             this.lastResult = "";
             this.resultBuffer = [];
             this.sendStateUpdate("COMPILING");
@@ -91,27 +76,12 @@ export class Project {
 
         this.flushResultBuffer();
         this.sendStateUpdate("COMPLETE");
-
-        if (this.tslintRunner) {
-            this.sendStateUpdate("COMPILING");
-            this.tslintRunner.startLinting();
-        }
     };
 
     private flushResultBuffer() {
         this.lastResult = this.resultBuffer!.join("");
         this.resultBuffer = null;
     }
-
-    private tsLintDoneCb = () => {
-        // Only report that we're done if tsc isn't running. Otherwise the tslint data might be irrelevant.
-        if (!this.resultBuffer && this.tslintRunner) {
-            const tslintResult = this.tslintRunner.getLastResult();
-            if (tslintResult) this.lastResult += `\n${tslintResult}`;
-
-            this.sendStateUpdate("COMPLETE");
-        }
-    };
 }
 
 function createCompileCommand(projectSettings: ProjectSettings) {

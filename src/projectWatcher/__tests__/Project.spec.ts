@@ -1,18 +1,8 @@
-import { TslintRunnerMock } from "../../tslint/__mocks__/TslintRunnerMock";
 import { ExecMockManager } from "../__mocks__/ExecMockManager";
-
-let tslintRunnerMock: TslintRunnerMock;
-jest.mock("../../tslint/TslintRunner", () => ({
-    TslintRunner: function(tslintArgs: TslintSettings, doneCb: () => void) {
-        tslintRunnerMock = new TslintRunnerMock(tslintArgs, doneCb);
-        return tslintRunnerMock;
-    }
-}));
 
 const execMock = new ExecMockManager();
 jest.mock("shelljs", () => ({ exec: execMock.fn }));
 
-import { TslintSettings } from "../../tslint/TslintRunner";
 import { Project, StateUpdate, Instruction } from "../Project";
 
 const emptyCb = () => {
@@ -28,15 +18,6 @@ describe("Project", () => {
 
         reportedStates = [];
         reportState = (stateUpdate: StateUpdate) => reportedStates.push(stateUpdate);
-    });
-
-    it("instantiates a new tslint runner if tslint settings are passed", () => {
-        const tslintSettings = { some: "TslintSettings" } as any;
-
-        createProject({ tslintSettings });
-
-        expect(tslintRunnerMock.calls).toStrictEqual(["constructor"]);
-        expect(tslintRunnerMock.tslintArgs).toBe(tslintSettings);
     });
 
     it("starts with a correct compiler command if all options are given", () => {
@@ -63,7 +44,7 @@ describe("Project", () => {
         expect(execMock.calls.length).toBe(0);
     });
 
-    describe("when configured without tslint", () => {
+    describe("when configured", () => {
         beforeEach(() => {
             const project = createProject({ compiler: "compiler", path: "path", reportState });
             project.processInstruction("START");
@@ -161,130 +142,6 @@ describe("Project", () => {
             });
         });
     });
-
-    describe("with tslint settings", () => {
-        beforeEach(() => {
-            const tslintSettings = { some: "TslintSettings" } as any;
-
-            const project = createProject({ compiler: "compiler", path: "path", reportState, tslintSettings });
-            project.processInstruction("START");
-        });
-
-        it("won't call any TslintRunner method before reporting state 'COMPLETE'", () => {
-            execMock.eventListeners["data"]("Message 1[BREAK]");
-            execMock.eventListeners["data"]("Message 2[BREAK]");
-
-            expect(reportedStates.length).toBe(1);
-            expect(tslintRunnerMock.calls).toStrictEqual(["constructor"]);
-        });
-
-        it("starts tslint after state 'COMPLETE' and reports 'COMPILING' again", () => {
-            execMock.eventListeners["data"]("TscMsg");
-            execMock.eventListeners["data"]("Compilation complete. Watching for file changes.");
-
-            expect(tslintRunnerMock.calls).toStrictEqual(["constructor", "startLinting"]);
-            expect(reportedStates[2]).toStrictEqual({ lastResult: "TscMsg", projectState: "COMPILING" });
-        });
-
-        it("reports 'COMPILING' and keeps the tsc messages while linting", () => {
-            execMock.eventListeners["data"]("TscMsg");
-            execMock.eventListeners["data"]("Compilation complete. Watching for file changes.");
-
-            tslintRunnerMock._setLastResult("LintMsg");
-
-            expect(tslintRunnerMock.calls).toStrictEqual(["constructor", "startLinting"]);
-            expect(reportedStates).toStrictEqual([
-                { lastResult: "", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "TscMsg", projectState: "COMPILING" }
-            ]);
-        });
-
-        it("reports 'COMPLETE' and the found lint messages", () => {
-            execMock.eventListeners["data"]("TscMsg");
-            execMock.eventListeners["data"]("Compilation complete. Watching for file changes.");
-
-            tslintRunnerMock._setLastResult("LintMsg");
-            tslintRunnerMock._fireDoneCb();
-
-            expect(tslintRunnerMock.calls).toStrictEqual(["constructor", "startLinting", "getLastResult"]);
-            expect(reportedStates).toStrictEqual([
-                { lastResult: "", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "TscMsg", projectState: "COMPILING" },
-                { lastResult: "TscMsg\nLintMsg", projectState: "COMPLETE" }
-            ]);
-        });
-
-        it("reports 'COMPLETE' if the tslint result is empty", () => {
-            execMock.eventListeners["data"]("TscMsg");
-            execMock.eventListeners["data"]("Compilation complete. Watching for file changes.");
-
-            tslintRunnerMock._setLastResult("");
-            tslintRunnerMock._fireDoneCb();
-
-            expect(tslintRunnerMock.calls).toStrictEqual(["constructor", "startLinting", "getLastResult"]);
-            expect(reportedStates).toStrictEqual([
-                { lastResult: "", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "TscMsg", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" }
-            ]);
-        });
-
-        it("reports 'COMPILING' without the last tslint result when recompiling tsc", () => {
-            execMock.eventListeners["data"]("TscMsg");
-            execMock.eventListeners["data"]("Compilation complete. Watching for file changes.");
-
-            tslintRunnerMock._setLastResult("LintMsg");
-            tslintRunnerMock._fireDoneCb();
-            execMock.eventListeners["data"]("Message 2");
-
-            expect(reportedStates).toStrictEqual([
-                { lastResult: "", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "TscMsg", projectState: "COMPILING" },
-                { lastResult: "TscMsg\nLintMsg", projectState: "COMPLETE" },
-                { lastResult: "", projectState: "COMPILING" }
-            ]);
-        });
-
-        it("aborts tslintRunner if new tsc messages come up in the meantime", () => {
-            execMock.eventListeners["data"]("TscMsg");
-            execMock.eventListeners["data"]("Compilation complete. Watching for file changes.");
-
-            tslintRunnerMock._setLastResult("LintMsg");
-            execMock.eventListeners["data"]("Message 2");
-            tslintRunnerMock._fireDoneCb();
-
-            expect(tslintRunnerMock.calls).toStrictEqual(["constructor", "startLinting", "abort"]);
-            expect(reportedStates).toStrictEqual([
-                { lastResult: "", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "TscMsg", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "", projectState: "COMPILING" }
-            ]);
-        });
-
-        it("ignores any new messages coming from tslint when compilation has started", () => {
-            execMock.eventListeners["data"]("TscMsg");
-            execMock.eventListeners["data"]("Compilation complete. Watching for file changes.");
-
-            execMock.eventListeners["data"]("Message 2");
-            tslintRunnerMock._setLastResult("LintMsg");
-            tslintRunnerMock._fireDoneCb();
-
-            expect(tslintRunnerMock.calls).toStrictEqual(["constructor", "startLinting", "abort"]);
-            expect(reportedStates).toStrictEqual([
-                { lastResult: "", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "TscMsg", projectState: "COMPILING" },
-                { lastResult: "TscMsg", projectState: "COMPLETE" },
-                { lastResult: "", projectState: "COMPILING" }
-            ]);
-        });
-    });
 });
 
 function createProject(args: {
@@ -292,11 +149,7 @@ function createProject(args: {
     path?: string;
     compiler?: string;
     noEmit?: boolean;
-    tslintSettings?: TslintSettings;
     reportState?: (stateUpdate: StateUpdate) => void;
 }) {
-    return new Project(
-        { compiler: args.compiler || "", path: args.path || "", watch: !!args.watch, tslint: args.tslintSettings },
-        args.reportState || emptyCb
-    );
+    return new Project({ compiler: args.compiler || "", path: args.path || "", watch: !!args.watch }, args.reportState || emptyCb);
 }

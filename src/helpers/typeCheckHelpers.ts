@@ -1,11 +1,9 @@
-import { isArray, isBoolean, isObject, isString } from "util";
-
 /**
  * Returns if variable is a non-empty string
  * @param variable the to be tested variable
  */
 export function isValidString(variable: any): variable is string {
-    return !!variable && isString(variable);
+    return !!variable && typeof variable === "string";
 }
 
 /**
@@ -13,7 +11,7 @@ export function isValidString(variable: any): variable is string {
  * @param variable the to be tested variable
  */
 export function isValidArray(variable: any): variable is any[] {
-    return !!variable && isArray(variable) && variable.length > 0;
+    return !!variable && Array.isArray(variable) && variable.length > 0;
 }
 
 /**
@@ -21,9 +19,7 @@ export function isValidArray(variable: any): variable is any[] {
  * @param variable the to be tested variable
  */
 export function isValidObject(variable: any): variable is Object {
-    return (
-        !!variable && isObject(variable) && Object.getOwnPropertyNames(variable).length > 0 && !isValidArray(variable)
-    );
+    return !!variable && typeof variable === "object" && Object.getOwnPropertyNames(variable).length > 0 && !isValidArray(variable);
 }
 
 /**
@@ -31,5 +27,5 @@ export function isValidObject(variable: any): variable is Object {
  * @param variable the to be tested variable
  */
 export function isValidBoolean(variable: any): variable is boolean {
-    return isBoolean(variable) && typeof variable === "boolean";
+    return typeof variable === "boolean";
 }

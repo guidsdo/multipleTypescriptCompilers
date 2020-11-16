@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { debugLog } from "../helpers/debugTools";
 import { canAccessPath, findJsonFile } from "../helpers/fileSystemHelpers";
 import { isValidArray, isValidBoolean, isValidObject, isValidString } from "../helpers/typeCheckHelpers";
-import { MtscConfig, ProjectConfig, TslintCfg } from "./configSpec";
+import { MtscConfig, ProjectConfig } from "./configSpec";
 
 const DEFAULT_CONFIG_NAME = "mtsc.json";
 
@@ -34,9 +34,6 @@ export function validateMtscConfig(config: MtscConfig) {
     assertTypeIfDefined("Config.watch", config.watch, isValidBoolean);
     assertTypeIfDefined("Config.noEmit", config.noEmit, isValidBoolean);
     assertTypeIfDefined("Config.compiler", config.compiler, isValidString);
-    assertTypeIfDefined("Config.tslintAlwaysShowAsWarning", config.tslintAlwaysShowAsWarning, isValidBoolean);
-
-    if (config.tslint) validateTslintConfig(config.tslint);
 
     const yarnWorkspaces = assertTypeIfDefined("Config.useYarnWorkspaces", config.useYarnWorkspaces, isValidBoolean);
 
@@ -64,23 +61,6 @@ export function validateProjectConfig(projectConfig: ProjectConfig) {
     assertType("ProjectConfig.path", projectConfig.path, isValidString);
     assertTypeIfDefined("ProjectConfig.compiler", projectConfig.compiler, isValidString);
     assertTypeIfDefined("ProjectConfig.noEmit", projectConfig.noEmit, isValidBoolean);
-
-    if (projectConfig.tslint) validateTslintConfig(projectConfig.tslint);
-}
-
-export function validateTslintConfig(tslintConfig: TslintCfg) {
-    if (isValidString(tslintConfig) || isValidBoolean(tslintConfig)) {
-        return;
-    }
-
-    if (!isValidObject(tslintConfig)) {
-        throw new Error("Tslint config is neither a valid object, boolean or a string");
-    }
-
-    assertTypeIfDefined("Tslint.autofix", tslintConfig.autofix, isValidBoolean);
-    assertTypeIfDefined("Tslint.enabled", tslintConfig.enabled, isValidBoolean);
-    assertTypeIfDefined("Tslint.rulesFile", tslintConfig.rulesFile, isValidString);
-    assertTypeIfDefined("Tslint.tsconfig", tslintConfig.tsconfig, isValidString);
 }
 
 function assertTypeIfDefined<T>(description: string, value: T, match: (value: T) => boolean) {

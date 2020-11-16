@@ -18,9 +18,7 @@ commander
     .option("-w, --watch", "Watch the given projects (default false)")
     .option("-p, --preserveWatchOutput", "Don't throw away watch output (default true in debug mode)")
     .option("-t, --tsc [path_to_tsc]", "Path to compiler for all projects (will search in exec dir if not given)")
-    .option("-l, --lint [path_to_tslintrules]", "Path to tslint rules for all projects (will search if not given)")
     .option("--noEmit", "Do not emit outputs")
-    .option("--tslintAlwaysShowAsWarning", "Always show tslint output as warning")
     .parse(process.argv);
 
 setDebugMode(!!commander.debug);
@@ -57,26 +55,9 @@ function initProjectWatcherFromCli() {
         mtscConfig.watch = commander.watch;
     }
 
-    debugLog("Checking if global tslint rules is given", commander.lint);
-    if (commander.lint && isValidString(commander.lint)) {
-        debugLog("Global tslint rules set to", commander.lint);
-        mtscConfig.tslint = commander.lint;
-    } else if (commander.lint && isValidBoolean(commander.lint)) {
-        debugLog("Tslint rules is true");
-        mtscConfig.tslint = commander.lint;
-    } else if (commander.lint) {
-        debugLog("Invalid lint option given", commander.lint);
-        throw new Error("Invalid lint option given");
-    }
-
     if (commander.noEmit) {
         debugLog("Global noEmit set to", commander.noEmit);
         mtscConfig.noEmit = commander.noEmit;
-    }
-
-    if (commander.tslintAlwaysShowAsWarning) {
-        debugLog("Global tslintAlwaysShowAsWarning set to", commander.tslintAlwaysShowAsWarning);
-        mtscConfig.tslintAlwaysShowAsWarning = commander.tslintAlwaysShowAsWarning;
     }
 
     debugLog("Checking if there are project folders or tsconfigs given", commander.args);
