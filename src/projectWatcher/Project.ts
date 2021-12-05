@@ -45,8 +45,8 @@ export class Project {
         debugLog("Tsc: executing following command", compileCommand);
         const child = sh.exec(compileCommand, SH_EXECOPTIONS) as ChildProcess;
 
-        child.stdout.on("data", this.parseCommandOutput);
-        child.stdout.on("end", this.processCompilationComplete);
+        child.stdout?.on("data", this.parseCommandOutput);
+        child.stdout?.on("end", this.processCompilationComplete);
     }
 
     private parseCommandOutput = (data: string) => {
