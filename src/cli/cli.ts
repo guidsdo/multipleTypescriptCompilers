@@ -1,5 +1,5 @@
 import * as cluster from "cluster";
-import * as commander from "commander";
+import { Command } from "commander";
 
 // Touch all the files from the main index, otherwise workers can't access all the necessary file
 import "..";
@@ -11,7 +11,9 @@ import { debugLog, setDebugMode } from "../helpers/debugTools";
 import { findNodeModuleExecutable } from "../helpers/fileSystemHelpers";
 import { isValidBoolean, isValidString } from "../helpers/typeCheckHelpers";
 
-commander
+const program = new Command();
+program
+    .usage("[options] [projects/tsconfigs...]")
     .usage("[options] [projects/tsconfigs...]")
     .option("-d, --debug", "Add way too much logging")
     .option("-c, --config [path_to_config]", "Path to mtsc config")
@@ -21,52 +23,54 @@ commander
     .option("--noEmit", "Do not emit outputs")
     .parse(process.argv);
 
-setDebugMode(!!commander.debug);
+const options = program.opts();
+
+setDebugMode(!!options.debug);
 
 function initProjectWatcherFromCli() {
-    const foundConfig = findMtscConfig(commander.config);
+    const foundConfig = findMtscConfig(options.config);
     const mtscConfig: MtscConfig = foundConfig || { projects: [] };
 
-    mtscConfig.debug = commander.debug || mtscConfig.debug;
+    mtscConfig.debug = options.debug || mtscConfig.debug;
     setDebugMode(!!mtscConfig.debug);
 
     if (foundConfig) validateMtscConfig(foundConfig);
 
-    debugLog("Checking if config is given or autodetect", commander.config);
+    debugLog("Checking if config is given or autodetect", options.config);
     debugLog("Any options given in CLI will overwrite the config");
 
-    debugLog("Checking if global compiler is given", commander.tsc);
-    if (commander.tsc && isValidString(commander.tsc)) {
-        debugLog("Global compiler set to", commander.tsc);
-        mtscConfig.compiler = commander.tsc;
-    } else if (commander.tsc && isValidBoolean(commander.tsc)) {
+    debugLog("Checking if global compiler is given", options.tsc);
+    if (options.tsc && isValidString(options.tsc)) {
+        debugLog("Global compiler set to", options.tsc);
+        mtscConfig.compiler = options.tsc;
+    } else if (options.tsc && isValidBoolean(options.tsc)) {
         debugLog("Compiler command is true, so now searching for tsc executable");
 
         mtscConfig.compiler = findNodeModuleExecutable(".", "tsc");
 
         debugLog("Compiler command set to", mtscConfig.compiler);
-    } else if (commander.tsc) {
-        debugLog("Invalid tsc option given", commander.tsc);
+    } else if (options.tsc) {
+        debugLog("Invalid tsc option given", options.tsc);
         throw new Error("Invalid tsc option given");
     }
 
-    if (commander.watch) {
-        debugLog("Global watch set to", commander.watch);
-        mtscConfig.watch = commander.watch;
+    if (options.watch) {
+        debugLog("Global watch set to", options.watch);
+        mtscConfig.watch = options.watch;
     }
 
-    if (commander.noEmit) {
-        debugLog("Global noEmit set to", commander.noEmit);
-        mtscConfig.noEmit = commander.noEmit;
+    if (options.noEmit) {
+        debugLog("Global noEmit set to", options.noEmit);
+        mtscConfig.noEmit = options.noEmit;
     }
 
-    debugLog("Checking if there are project folders or tsconfigs given", commander.args);
-    if (!commander.args.length && !mtscConfig.projects.length && !mtscConfig.useYarnWorkspaces) {
+    debugLog("Checking if there are project folders or tsconfigs given", options.args);
+    if (!options.args.length && !mtscConfig.projects.length && !mtscConfig.useYarnWorkspaces) {
         debugLog("No tsconfig arguments given, will use current dir");
-        commander.args.push(".");
+        options.args.push(".");
     }
 
-    commander.args.forEach(path => {
+    program.args.forEach(path => {
         mtscConfig.projects.push({ path });
     });
 
