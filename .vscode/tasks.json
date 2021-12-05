@@ -3,10 +3,13 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "Mtsc",
-            "command": "./bin/mtsc -w -p .",
+            "label": "Typescript watch",
+            "command": "./node_modules/.bin/mtsc",
             "isBackground": true,
             "problemMatcher": "$tsc-watch",
+            "presentation": {
+                "reveal": "never"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true
