@@ -1334,6 +1334,11 @@ combined-stream@^1.0.8:
   dependencies:
     delayed-stream "~1.0.0"
 
+commander@^6.2.0:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
+  integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
+
 commander@^8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
@@ -2668,6 +2673,16 @@ ms@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
+
+mtsc@^4.0.0-no-tslint:
+  version "4.0.0-no-tslint"
+  resolved "https://registry.yarnpkg.com/mtsc/-/mtsc-4.0.0-no-tslint.tgz#e232442427270e0d87680b52a130917a511f5882"
+  integrity sha512-GtXeYiG/PqUUlCdn9dAbr2ZryK6m68Z5ac0R55sJREJI4d2A31YUViyBuxTLxoHPODj3qrZpLKnbkm0lpeuR8w==
+  dependencies:
+    colors "^1.4.0"
+    commander "^6.2.0"
+    moment "^2.29.1"
+    shelljs "^0.8.4"
 
 natural-compare@^1.4.0:
   version "1.4.0"

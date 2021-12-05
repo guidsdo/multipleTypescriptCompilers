@@ -4,6 +4,8 @@
         {
             "type": "shell",
             "label": "Typescript watch",
+            // Use dev artifacts:
+            // "command": "./bin/mtsc -w -p .",
             "command": "./node_modules/.bin/mtsc",
             "isBackground": true,
             "problemMatcher": "$tsc-watch",
