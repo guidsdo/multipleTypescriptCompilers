@@ -1,4 +1,4 @@
-import * as cluster from "cluster";
+import cluster from "node:cluster";
 import { ProjectSettings, Project } from "./Project";
 
 export * from "./Project";

@@ -1,37 +1,38 @@
 {
-    "editor.tabSize": 4,
-    "editor.insertSpaces": true,
-    "files.trimTrailingWhitespace": true,
-    "files.eol": "\n",
-    "files.insertFinalNewline": true,
-    "git.autofetch": false,
-    "search.exclude": {
-        "node_modules": true
-    },
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "files.trimTrailingWhitespace": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "git.autofetch": false,
+  "search.exclude": {
+    "node_modules": true
+  },
 
-    "[typescript]": {
-        "editor.formatOnSave": true
-    },
-    "[javascript]": {
-        "editor.formatOnSave": true
-    },
-    "[jsonc]": {
-        "editor.formatOnSave": true
-    },
-    "[markdown]": {
-        "files.trimTrailingWhitespace": false
-    },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
 
-    // Typescript
-    "typescript.tsdk": "./node_modules/typescript/lib",
-    "typescript.referencesCodeLens.enabled": true,
-    "typescript.implementationsCodeLens.enabled": true,
-    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
-    "typescript.reportStyleChecksAsWarnings": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 
-    // Plugins
-    "prettier.tabWidth": 4,
-    "prettier.printWidth": 120,
-    "tslint.enable": false,
-    "csscomb.formatOnSave": true
+  // Typescript
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
+  "typescript.reportStyleChecksAsWarnings": false,
+
+  // Plugins
+  "prettier.tabWidth": 4,
+  "prettier.printWidth": 120,
+  "csscomb.formatOnSave": true
 }

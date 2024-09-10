@@ -2,7 +2,6 @@ import { debugLog, setDebugMode } from "../helpers/debugTools";
 import { findNodeModuleExecutable } from "../helpers/fileSystemHelpers";
 import { isValidString, isValidBoolean } from "../helpers/typeCheckHelpers";
 import { ProjectsWatcher } from "../projectWatcher/ProjectsWatcher";
-import { ProjectSettings } from "../projectWatcher/Project";
 import { MtscConfig } from "./configSpec";
 import { getYarnWorkspaces } from "../helpers/yarnHelpers";
 
@@ -10,8 +9,6 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
     setDebugMode(!!mtscCfg.debug);
 
     if (!isValidBoolean(mtscCfg.watch)) mtscCfg.watch = false;
-
-    const projectsWatcher = new ProjectsWatcher();
 
     if (mtscCfg.useYarnWorkspaces) getYarnWorkspaces().forEach(workspace => mtscCfg.projects.push(workspace));
 
@@ -21,7 +18,9 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
         new Array() as typeof normalisedProjects
     );
 
-    for (const projectCfg of uniqueProjects) {
+    const projectsWatcher = new ProjectsWatcher(!!mtscCfg.watch);
+
+    uniqueProjects.forEach(projectCfg => {
         if (!isValidString(projectCfg.compiler)) {
             projectCfg.compiler = isValidString(mtscCfg.compiler) ? mtscCfg.compiler : findNodeModuleExecutable(projectCfg.path, "tsc");
         }
@@ -30,14 +29,13 @@ export function initProjectsWatcher(mtscCfg: MtscConfig): ProjectsWatcher {
 
         debugLog(`Adding project:\nPath: ${projectCfg.path}\nwatch: ${!!mtscCfg.watch}\nCompiler: ${projectCfg.compiler}`);
 
-        const projectSettings: ProjectSettings = {
-            watch: mtscCfg.watch,
+        projectsWatcher.addWorker({
+            watch: !!mtscCfg.watch,
             path: projectCfg.path,
             compiler: projectCfg.compiler,
             noEmit: projectCfg.noEmit
-        };
-        projectsWatcher.addWorker(projectSettings);
-    }
+        });
+    });
 
     return projectsWatcher;
 }

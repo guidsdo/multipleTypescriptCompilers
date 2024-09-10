@@ -22,9 +22,7 @@ export function findJsonFile(path: string, fallbackFileName: string) {
         return path;
     }
 
-    throw new Error(
-        `No valid json file found for '${path}' or file called "${fallbackFileName}" in it. Use --debug for more info.`
-    );
+    throw new Error(`No valid json file found for '${path}' or file called "${fallbackFileName}" in it. Use --debug for more info.`);
 }
 
 export function findNodeModuleExecutable(path: string, moduleName: string) {
@@ -55,7 +53,6 @@ export function getProjectDir(path: string) {
 export function canAccessPath(path: string, shouldBeFile: boolean) {
     debugLog(`Checking if '${path}' exists and can be accessed`);
 
-    // tslint:disable-next-line:no-bitwise
     node_fs.accessSync(path, node_fs.constants.F_OK & node_fs.constants.R_OK);
 
     if (shouldBeFile && !node_fs.lstatSync(path).isFile()) throw new Error(`Path '${path}' is not a file`);
@@ -63,7 +60,6 @@ export function canAccessPath(path: string, shouldBeFile: boolean) {
 
 function canExecutePath(path: string) {
     debugLog(`Checking if ${path} exists and can be executed`);
-    // tslint:disable-next-line:no-bitwise
     node_fs.accessSync(path, node_fs.constants.F_OK & node_fs.constants.X_OK);
 }
 
@@ -71,6 +67,6 @@ const runnerOriginPath = node_path.resolve(".") + "/";
 
 export function getRelativePath(absolutePath: string) {
     return absolutePath.startsWith(runnerOriginPath)
-        ? absolutePath.substr(runnerOriginPath.length)
-        : node_path.resolve(absolutePath).substr(runnerOriginPath.length);
+        ? absolutePath.substring(runnerOriginPath.length)
+        : node_path.resolve(absolutePath).substring(runnerOriginPath.length);
 }

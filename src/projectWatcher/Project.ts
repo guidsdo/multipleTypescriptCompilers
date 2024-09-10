@@ -42,7 +42,7 @@ export class Project {
     private startCompiling() {
         const compileCommand = createCompileCommand(this.projectSettings);
 
-        debugLog("Tsc: executing following command", compileCommand);
+        debugLog("tsc: executing following command", compileCommand);
         const child = sh.exec(compileCommand, SH_EXECOPTIONS) as ChildProcess;
 
         child.stdout?.on("data", this.parseCommandOutput);
@@ -71,15 +71,12 @@ export class Project {
     };
 
     private processCompilationComplete = () => {
-        // Can't proces a complete compilation if there was no message
-        if (!this.resultBuffer) return;
-
         this.flushResultBuffer();
         this.sendStateUpdate("COMPLETE");
     };
 
     private flushResultBuffer() {
-        this.lastResult = this.resultBuffer!.join("");
+        this.lastResult = this.resultBuffer?.join("") ?? "";
         this.resultBuffer = null;
     }
 }

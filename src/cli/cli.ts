@@ -1,4 +1,4 @@
-import * as cluster from "cluster";
+import cluster from "node:cluster";
 import { Command } from "commander";
 
 // Touch all the files from the main index, otherwise workers can't access all the necessary file
@@ -65,18 +65,16 @@ function initProjectWatcherFromCli() {
     }
 
     debugLog("Checking if there are project folders or tsconfigs given", options.args);
-    if (!options.args.length && !mtscConfig.projects.length && !mtscConfig.useYarnWorkspaces) {
+    if (!program.args.length && !mtscConfig.projects.length && !mtscConfig.useYarnWorkspaces) {
         debugLog("No tsconfig arguments given, will use current dir");
-        options.args.push(".");
+        program.args.push(".");
     }
 
-    program.args.forEach(path => {
-        mtscConfig.projects.push({ path });
-    });
+    program.args.forEach(path => mtscConfig.projects.push({ path }));
 
     return initProjectsWatcher(mtscConfig);
 }
 
-if (cluster.isMaster) {
+if (cluster.isPrimary) {
     initProjectWatcherFromCli().startCompilations();
 }

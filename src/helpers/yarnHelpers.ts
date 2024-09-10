@@ -7,6 +7,8 @@ export function checkYarnAvailability() {
 }
 
 export function getYarnWorkspaces() {
+    checkYarnAvailability();
+
     const result = sh.exec("yarn workspaces info --json", { silent: true });
 
     if (result.stderr) {

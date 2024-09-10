@@ -1,13 +1,7 @@
 import * as sh from "shelljs";
 import * as node_path from "path";
 
-import {
-    canAccessPath,
-    findNodeModuleExecutable,
-    findJsonFile,
-    getRelativePath,
-    getProjectDir
-} from "../fileSystemHelpers";
+import { canAccessPath, findNodeModuleExecutable, findJsonFile, getRelativePath, getProjectDir } from "../fileSystemHelpers";
 
 const TEST_FOLDER_NODE_MODULES_PRESENT = "test_setup/folder_node_modules_present";
 const TEST_FOLDER_NODE_MODULES_MISSING = "test_setup/folder_node_modules_missing";
@@ -39,9 +33,7 @@ describe("fileSystemHelpers", () => {
         });
 
         it("throws an error when path cannot be accessed", () => {
-            expect(() => canAccessPath("fake_path", false)).toThrow(
-                "ENOENT: no such file or directory, access 'fake_path'"
-            );
+            expect(() => canAccessPath("fake_path", false)).toThrow("ENOENT: no such file or directory, access 'fake_path'");
         });
 
         it("throws an error when directory can be accessed but it should be a file", () => {
@@ -59,9 +51,7 @@ describe("fileSystemHelpers", () => {
         });
 
         it("finds file when given path is a directory", () => {
-            expect(findJsonFile(TEST_FOLDER_TSCONFIG_PRESENT, "tsconfig.json")).toContain(
-                `${TEST_FOLDER_TSCONFIG_PRESENT}/tsconfig.json`
-            );
+            expect(findJsonFile(TEST_FOLDER_TSCONFIG_PRESENT, "tsconfig.json")).toContain(`${TEST_FOLDER_TSCONFIG_PRESENT}/tsconfig.json`);
         });
 
         it("fails when given path does not exist", () => {
@@ -85,9 +75,9 @@ describe("fileSystemHelpers", () => {
         });
 
         it("returns the relative path if a partly relative path is given", () => {
-            expect(getRelativePath("../multipleTypescriptCompilers/" + TEST_FOLDER_TSCONFIG_PRESENT)).toBe(
-                TEST_FOLDER_TSCONFIG_PRESENT
-            );
+            const folderName = node_path.resolve(".").split("/").at(-1)!;
+
+            expect(getRelativePath(`../${folderName}/` + TEST_FOLDER_TSCONFIG_PRESENT)).toBe(TEST_FOLDER_TSCONFIG_PRESENT);
         });
     });
 

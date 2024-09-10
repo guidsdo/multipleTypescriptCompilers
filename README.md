@@ -11,9 +11,6 @@ _Monorepo solution for multiple typescript projects. Watch multiple typescript c
 [![download](https://img.shields.io/npm/dw/mtsc.svg?colorB=cb3837)](https://www.npmjs.com/package/mtsc)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-## Update 18-november-2020
-Currently this library is in the process of removing tslint support. For some reasons, tslint is deprecated and this means that you will have to move to eslint for linting. I haven't found a good upgrade path for mono-repositories yet. When one is found, I'll update Mtsc with it. The whole goal of Mtsc is to integrate into vscode (since it has terrible multi-project support). Vscode team 'fixed' this partly with workspaces, but in practise this isn't a full fix and it also makes your dev environment feels like a complete mess.
-
 The vision and goal for Mtsc is, and always has been, the following:
 - Be able to lint and ts-compile multiple projects, concurrently whilst keeping all the results (not possible with just `concurrently`)
 - Facilitate proper vscode integration which means:
@@ -26,9 +23,6 @@ The vision and goal for Mtsc is, and always has been, the following:
     1. `code .`
     1. `cmd+shift+b`
     1. See what's happening in your whole monorepo and be able to work at the same time (watchmode). :mindblown:
-
-To be honest, I'm not optimistic because it seems that I will have to do a lot of work to make this work for ts-eslint (which itself already feels like a hack). But hey, on the other hand; I love diving in this kind of stuff.  
-**For now, please use the latest version with the `-no-tslint` tag.**
 
 ## Usage
 
@@ -58,7 +52,7 @@ This always prints the compilation output of the other projects when a new compi
 
 ### Known issues
 
-This package has a peerdependency on tslint. The tool allows you to not use tslint, but will fail if tslint cannot be found. Currently nobody has complained about it (or anything for that matter) so it won't be fixed. Most serious typescript projects have tslint anyway.
+- Please let me know
 
 ## Cli
 
@@ -70,9 +64,7 @@ This package has a peerdependency on tslint. The tool allows you to not use tsli
     -c, --config [path_to_config]     Path to mtsc config
     -w, --watch                       Watch the given projects (default false)
     -t, --tsc [path_to_tsc]           Path to compiler for all projects (will search in exec dir if not given)
-    -l, --lint [path_to_tslintrules]  Path to tslint rules for all projects (will search if not given)
     --noEmit                          Do not emit outputs
-    --tslintAlwaysShowAsWarning       Always show tslint output as warning
     -h, --help                        output usage information
 ```
 
@@ -85,11 +77,6 @@ This package has a peerdependency on tslint. The tool allows you to not use tsli
 Set the typescript compiler in vscode by clicking on the compiler version. This is only possible when you open a typescript file. This setting sometimes goes to the builtin vscode compiler, so if you don't see errors; check this first.  
 <img src="https://github.com/guidsdo/multipleTypescriptCompilers/blob/master/images/ts_switcher.png?raw=true"/>  
   
-## Tslint support
-Install the right plugin and follow the README: https://github.com/Microsoft/typescript-tslint-plugin
-
-[Tslint section of config spec here](https://github.com/guidsdo/multipleTypescriptCompilers/blob/master/src/config/configSpec.ts)
-
 ## Vscode tasks json examples
 
 ### Example using cli only
@@ -154,7 +141,6 @@ Install the right plugin and follow the README: https://github.com/Microsoft/typ
 
 ## Roadmap
 
--   Allow directories to be ignored, because tslint doesn't always pick them up unfortunately.
 -   Any ideas? Let me know :)
 
 ---

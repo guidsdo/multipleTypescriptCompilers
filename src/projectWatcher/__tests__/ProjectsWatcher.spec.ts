@@ -2,7 +2,7 @@ import { ClusterMockManager } from "../__mocks__/ClusterMockManager";
 import { StdoutSpy } from "../__mocks__/StdoutSpy";
 
 const clusterMock = new ClusterMockManager();
-jest.mock("cluster", () => clusterMock);
+jest.mock("node:cluster", () => clusterMock);
 
 // Just always let the time be 00:00:00 for testing
 jest.mock("moment", () => () => ({ format: () => "00:00:00" }));
@@ -15,7 +15,7 @@ describe("ProjectsWatcher", () => {
     let projectsWatcher: ProjectsWatcher;
 
     beforeEach(() => {
-        projectsWatcher = new ProjectsWatcher();
+        projectsWatcher = new ProjectsWatcher(true);
     });
 
     afterEach(() => {

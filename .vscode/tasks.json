@@ -1,24 +1,23 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "type": "shell",
-            "label": "Typescript watch",
-            // Use dev artifacts:
-            // "command": "./bin/mtsc -w -p .",
-            "command": "./node_modules/.bin/mtsc",
-            "isBackground": true,
-            "problemMatcher": "$tsc-watch",
-            "presentation": {
-                "reveal": "never"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "runOptions": {
-                "runOn": "folderOpen"
-            }
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "Typescript watch",
+      // Dev artefact is used
+      "command": "pnpm mtsc",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch",
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
 }
