@@ -8,7 +8,7 @@
         "mtsc": "./lib/cli/cli.js"
     },
     "scripts": {
-        "prepublish": "yarn build",
+        "prepublish": "pnpm build",
         "build": "rm -rf lib && tsc",
         "test": "jest",
         "test:watch": "jest --watch --coverage",
